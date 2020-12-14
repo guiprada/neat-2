@@ -1,0 +1,11 @@
+git clone https://github.com/microsoft/vcpkg
+.\vcpkg\bootstrap-vcpkg.bat
+cd .\vcpkg
+
+vcpkg install sdl2[vulkan] sdl2-image[libjpeg-turbo,tiff] sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,nativemidi] sdl2-gfx sdl2-net sdl2-ttf
+vcpkg install lua
+
+vcpkg install sdl2[vulkan]:x64-windows sdl2-image[libjpeg-turbo,tiff]:x64-windows sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,nativemidi]:x64-windows sdl2-gfx:x64-windows sdl2-net:x64-windows sdl2-ttf:x64-windows
+vcpkg install lua:x64-windows
+
+vcpkg integrate install
