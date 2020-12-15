@@ -242,7 +242,7 @@ void neat_sprite_set_source_rect(neat_sprite* sprite, int x, int y, int w, int h
 	sprite->source_rect.y = y;
 
 	double sx = w / sprite->source_rect.w;
-	double sy = w / sprite->source_rect.h;
+	double sy = h / sprite->source_rect.h;
 
 	sprite->source_rect.w = w;
 	sprite->source_rect.h = h;
@@ -347,4 +347,31 @@ neat_texture* neat_texture_create_from_text(
 		SDL_FreeSurface(text_surface);
 		return text_texture;
 	}
+}
+
+void  neat_rect_fill(neat_window* w, SDL_Color* color, SDL_Rect* rect) {
+	SDL_Color  old_color;
+	SDL_GetRenderDrawColor(
+		w->renderer,
+		&old_color.r,
+		&old_color.g,
+		&old_color.b,
+		&old_color.a
+	);
+	SDL_SetRenderDrawColor(
+		w->renderer,
+		color->r,
+		color->g,
+		color->b, color->a
+	);
+	int i = SDL_RenderFillRect(w->renderer, rect);
+
+	SDL_SetRenderDrawColor(
+		w->renderer,
+		old_color.r,
+		old_color.g,
+		old_color.b,
+		old_color.a
+	);
+	return 0;
 }

@@ -39,7 +39,12 @@ texto2:move_to(0,0)
 
 circle1_speed = 0
 is_running = true
+local last_time = os.clock()
 while is_running do
+	local this_time = os.clock()
+	local delta_time = this_time - last_time
+	last_time = this_time
+	print(1/delta_time, delta_time)
     if (neat.is_key_pressed(scancodes["U"])) then
         print("u")
     end
@@ -97,7 +102,6 @@ while is_running do
     if window2 and window2:is_shown() then
         window2:clear()
         circle2:render()
-        --texto2:render()
         texto2:render()
         window2:present()
     end

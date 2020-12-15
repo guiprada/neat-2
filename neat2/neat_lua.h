@@ -552,29 +552,8 @@ static int lua_rect_fill(lua_State* L) {
 	}
 	else rect.h = (int)lua_tointeger(L, 6);
 
-	SDL_Color  old_color;
-	SDL_GetRenderDrawColor(
-		w->renderer,
-		&old_color.r,
-		&old_color.g,
-		&old_color.b,
-		&old_color.a
-	);
-	SDL_SetRenderDrawColor(
-		w->renderer,
-		color->r,
-		color->g,
-		color->b, color->a
-	);
-	int i = SDL_RenderFillRect(w->renderer, &rect);
+	neat_rect_fill(w, color, &rect);
 
-	SDL_SetRenderDrawColor(
-		w->renderer,
-		old_color.r,
-		old_color.g,
-		old_color.b,
-		old_color.a
-	);
 	return 0;
 }
 

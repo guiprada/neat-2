@@ -1,11 +1,18 @@
 todo
 - change window management
+- define color c- side
+- print function
+- sound
+- fix vsync
+- test rotations and anchors
+- center on point function
+- custom allocator
+- add  dt calculation
+- add fps counter
 - change neat.h to return int instead of void
 - query texture width and height functions
 - structure gameloop
 - add colors
-- add  dt calculation
-- add fps counter
 - add sound loading and playing
 - add window resizing
 - investigate joystick support
