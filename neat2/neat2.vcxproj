@@ -81,7 +81,9 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)utils.lua  $(OutDir)
+      <Command>del $(OutDir)utils.lua
+del $(OutDir)main.lua
+xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -96,7 +98,9 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)utils.lua  $(OutDir)
+      <Command>del $(OutDir)utils.lua
+del $(OutDir)main.lua
+xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -115,7 +119,9 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)utils.lua  $(OutDir)
+      <Command>del $(OutDir)utils.lua
+del $(OutDir)main.lua
+xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -134,7 +140,9 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)utils.lua  $(OutDir)
+      <Command>del $(OutDir)utils.lua
+del $(OutDir)main.lua
+xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

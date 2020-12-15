@@ -1,3 +1,6 @@
+-- guiprada@gmail.com  Guilherme Cunha Prada 2017-2020 : )
+-- zlib license
+
 local utils = require "utils"
 utils.run_tests()
 
@@ -6,7 +9,7 @@ scancodes = neat.define_scancodes()
 -- load up some fonts
 font1 = neat.new_font("fonts/GamjaFlower-Regular.ttf", 48)
 font2 = neat.new_font("fonts/PressStart2P-Regular.ttf", 48)
-print(font1, font2)
+
 -- windows size
 screen_width, screen_height = 201, 201
 

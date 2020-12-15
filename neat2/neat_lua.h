@@ -1,3 +1,6 @@
+// guiprada@gmail.com  Guilherme Cunha Prada 2017-2020 : )
+// zlib license
+
 #pragma once
 
 #include <lua.h>
@@ -26,6 +29,7 @@ static int lua_sprite_move(lua_State* L);
 static int lua_sprite_move_to(lua_State* L);
 static int lua_sprite_set_rotation(lua_State* L);
 static int lua_sprite_set_anchor(lua_State* L);
+static int lua_sprite_set_source_rect(lua_State* L);
 
 static int lua_texture_create(lua_State* L);
 static int lua_texture_create_from_text(lua_State* L);
@@ -78,6 +82,7 @@ static const struct luaL_Reg neat_sprite_methods[] = {
 	{"move_to", lua_sprite_move_to},
 	{"set_rotation", lua_sprite_set_rotation},
 	{"set_anchor", lua_sprite_set_anchor},
+	{"set_source", lua_sprite_set_source_rect},
 	{"__gc", lua_sprite_destroy},
 	{NULL, NULL}
 };
@@ -282,19 +287,18 @@ static int lua_sprite_move(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 3) return 0;
 
-	if (!lua_isinteger(L, 2)) {
+	if (!lua_isnumber(L, 2)) {
 		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
 		lua_error(L);
 	}
-	if (!lua_isinteger(L, 3)) {
+	if (!lua_isnumber(L, 3)) {
 		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
 		lua_error(L);
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
-	sp->pos_rect.x += (int)lua_tointeger(L, 2);
-	sp->pos_rect.y += (int)lua_tointeger(L, 3);
-
+	neat_sprite_move(sp, (double)lua_tonumber(L, 2), (double)lua_tonumber(L, 3));
+	
 	return 0;
 }
 
@@ -302,18 +306,17 @@ static int lua_sprite_move_to(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 3) return 0;
 
-	if (!lua_isinteger(L, 2)) {
+	if (!lua_isnumber(L, 2)) {
 		lua_pushstring(L, "Incorrect argument to lua_sprite_move_to()");
 		lua_error(L);
 	}
-	if (!lua_isinteger(L, 3)) {
+	if (!lua_isnumber(L, 3)) {
 		lua_pushstring(L, "Incorrect argument to lua_sprite_move_to()");
 		lua_error(L);
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
-	sp->pos_rect.x = (int)lua_tointeger(L, 2);
-	sp->pos_rect.y = (int)lua_tointeger(L, 3);
+	neat_sprite_move_to(sp, (double)lua_tonumber(L, 2), (double)lua_tonumber(L, 3));
 
 	return 0;
 }
@@ -347,6 +350,39 @@ static int lua_sprite_set_anchor(lua_State* L) {
 	neat_sprite* sp = check_and_get_sprite(L, 1);
 	sp->anchor.x = (int)lua_tointeger(L, 2);
 	sp->anchor.y = (int)lua_tointeger(L, 3);
+
+	return 0;
+}
+
+static int lua_sprite_set_source_rect(lua_State* L) {
+	int n = lua_gettop(L);
+	if (n != 5) return 0;
+
+
+	if (!lua_isinteger(L, 2)) {
+		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_error(L);
+	}
+	if (!lua_isinteger(L, 3)) {
+		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_error(L);
+	}
+	if (!lua_isinteger(L, 4)) {
+		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_error(L);
+	}
+	if (!lua_isinteger(L, 5)) {
+		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_error(L);
+	}
+
+	neat_sprite* sp = check_and_get_sprite(L, 1);
+	neat_sprite_set_source_rect(
+		sp,
+		(int)lua_tointeger(L, 2),
+		(int)lua_tointeger(L, 3),
+		(int)lua_tointeger(L, 4),
+		(int)lua_tointeger(L, 5));
 
 	return 0;
 }

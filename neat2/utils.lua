@@ -1,3 +1,6 @@
+-- guiprada@gmail.com  Guilherme Cunha Prada 2017-2020 : )
+-- zlib license
+
 local utils = {}
 
 math.randomseed(os.time())

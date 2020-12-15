@@ -1,4 +1,4 @@
-// guiprada@gmail.com  Guilherme Cunha Prada 2017-2019 : )
+// guiprada@gmail.com  Guilherme Cunha Prada 2017-2020 : )
 // zlib license
 
 #include "neat_lua.h"

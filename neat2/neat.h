@@ -31,8 +31,8 @@ struct sprite_struct {
 
 typedef struct neat_texture_struct	neat_texture;
 struct neat_texture_struct {
-	SDL_Texture* texture;
-	neat_window* window;
+	SDL_Texture*	texture;
+	neat_window*	window;
 };
 ////////////////////////////////////////////////////////////////////// functions
 
@@ -50,6 +50,9 @@ void                neat_sprite_render(neat_sprite*);
 void				neat_sprite_init(neat_sprite*, neat_texture*);
 neat_sprite*		neat_sprite_create(neat_texture*);
 void				neat_sprite_destroy(neat_sprite*);
+void				neat_sprite_move(neat_sprite*, double, double);
+void				neat_sprite_move_to(neat_sprite*, double, double);
+void				neat_sprite_set_source_rect(neat_sprite*, int, int, int, int);
 
 SDL_Rect			neat_assign_rect(int, int, int, int);
 SDL_Point			neat_assign_point(int, int);
@@ -186,6 +189,32 @@ neat_sprite* neat_sprite_create(neat_texture* tex) {
 	neat_sprite_init(sprite, tex);
 	return sprite;
 }
+
+void neat_sprite_move(neat_sprite* sprite, double x, double y) {
+	sprite->pos_rect.x += x;
+	sprite->pos_rect.y += y;
+	sprite->anchor.x += x;
+	sprite->anchor.y += y;
+}
+
+void neat_sprite_move_to(neat_sprite* sprite, double x, double y) {
+	sprite->pos_rect.x = x;
+	sprite->pos_rect.y = y;
+	sprite->anchor.x = x + sprite->pos_rect.w / 2;
+	sprite->anchor.y = y + sprite->pos_rect.h / 2;
+}
+
+void neat_sprite_set_source_rect(neat_sprite* sprite, int x, int y, int w, int h) {
+	sprite->source_rect.x = x;
+	sprite->source_rect.y = y;
+	sprite->source_rect.w = w;
+	sprite->source_rect.h = h;
+	sprite->pos_rect.w = w;
+	sprite->pos_rect.h = h;
+	sprite->anchor.x = sprite->pos_rect.x + w / 2;
+	sprite->anchor.y = sprite->pos_rect.y + h / 2;
+}
+
 
 void neat_sprite_destroy(neat_sprite* sprite) {
 	free(sprite);
