@@ -1,4 +1,5 @@
 todo
+- change window management
 - change neat.h to return int instead of void
 - query texture width and height functions
 - structure gameloop

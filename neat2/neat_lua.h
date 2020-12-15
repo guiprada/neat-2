@@ -30,6 +30,7 @@ static int lua_sprite_move_to(lua_State* L);
 static int lua_sprite_set_rotation(lua_State* L);
 static int lua_sprite_set_anchor(lua_State* L);
 static int lua_sprite_set_source_rect(lua_State* L);
+static int lua_sprite_set_scale(lua_State* L);
 
 static int lua_texture_create(lua_State* L);
 static int lua_texture_create_from_text(lua_State* L);
@@ -83,6 +84,7 @@ static const struct luaL_Reg neat_sprite_methods[] = {
 	{"set_rotation", lua_sprite_set_rotation},
 	{"set_anchor", lua_sprite_set_anchor},
 	{"set_source", lua_sprite_set_source_rect},
+	{"set_scale", lua_sprite_set_scale},
 	{"__gc", lua_sprite_destroy},
 	{NULL, NULL}
 };
@@ -348,8 +350,7 @@ static int lua_sprite_set_anchor(lua_State* L) {
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
-	sp->anchor.x = (int)lua_tointeger(L, 2);
-	sp->anchor.y = (int)lua_tointeger(L, 3);
+	neat_sprite_set_anchor(sp, (int)lua_tointeger(L, 2), (int)lua_tointeger(L, 3));
 
 	return 0;
 }
@@ -383,6 +384,25 @@ static int lua_sprite_set_source_rect(lua_State* L) {
 		(int)lua_tointeger(L, 3),
 		(int)lua_tointeger(L, 4),
 		(int)lua_tointeger(L, 5));
+
+	return 0;
+}
+
+static int lua_sprite_set_scale(lua_State* L) {
+	int n = lua_gettop(L);
+	if (n != 3) return 0;
+
+	if (!lua_isnumber(L, 2)) {
+		lua_pushstring(L, "Incorrect argument to lua_sprite_move_to()");
+		lua_error(L);
+	}
+	if (!lua_isnumber(L, 3)) {
+		lua_pushstring(L, "Incorrect argument to lua_sprite_move_to()");
+		lua_error(L);
+	}
+
+	neat_sprite* sp = check_and_get_sprite(L, 1);
+	neat_sprite_set_scale(sp, (double)lua_tonumber(L, 2), (double)lua_tonumber(L, 3));
 
 	return 0;
 }
