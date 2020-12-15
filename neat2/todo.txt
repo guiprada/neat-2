@@ -1,1 +1,7 @@
-fix check_and_get_color return
+- add colors
+- add  dt calculation
+- add fps counter
+- add sound loading and playing
+- add window resizing
+- investigate joystick support
+- investigate network
