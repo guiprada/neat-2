@@ -83,8 +83,10 @@
     <PostBuildEvent>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
+del $(OutDir)color.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
-xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)main.lua  $(OutDir)
+xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -100,8 +102,10 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     <PostBuildEvent>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
+del $(OutDir)color.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
-xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)main.lua  $(OutDir)
+xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,8 +125,10 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     <PostBuildEvent>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
+del $(OutDir)color.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
-xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)main.lua  $(OutDir)
+xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,8 +148,10 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     <PostBuildEvent>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
+del $(OutDir)color.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
-xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)main.lua  $(OutDir)
+xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -154,6 +162,8 @@ xcopy /y $(ProjectDir)main.lua  $(OutDir)</Command>
     <ClCompile Include="neat_lua.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="color.lua" />
+    <None Include="game.lua" />
     <None Include="main.lua" />
     <None Include="utils.lua" />
   </ItemGroup>

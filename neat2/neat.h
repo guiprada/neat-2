@@ -11,6 +11,12 @@
 #include <stdbool.h>
 //////////////////////////////////////////////////////////////////////// structs
 
+typedef struct vec2_struct neat_vec2;
+struct vec2_struct {
+	double x;
+	double y;
+};
+
 typedef struct window_struct neat_window;
 struct window_struct {
 	SDL_Window* window;
@@ -23,8 +29,11 @@ struct sprite_struct {
 	SDL_Texture* texture;
 	SDL_Rect			source_rect;
 	SDL_Rect			pos_rect;
-	SDL_Point			anchor;
+	neat_vec2			pos;
+	SDL_Point			anchor_point;
+	neat_vec2			anchor;
 	double				rotation;
+	neat_vec2				scale;
 	SDL_RendererFlip	flip;
 	neat_window* window;
 };
@@ -46,16 +55,20 @@ neat_window* neat_window_create(const char*, int, int, int, int);
 // NULL on error, you have to free_context() it!
 
 void				neat_window_destroy(neat_window*);
+
 void                neat_sprite_render(neat_sprite*);
 void				neat_sprite_init(neat_sprite*, neat_texture*);
 neat_sprite*		neat_sprite_create(neat_texture*);
 void				neat_sprite_destroy(neat_sprite*);
+void				neat_sprite_set_scale(neat_sprite*, double, double);
+void				neat_sprite_set_anchor(neat_sprite*, double, double);
 void				neat_sprite_move(neat_sprite*, double, double);
 void				neat_sprite_move_to(neat_sprite*, double, double);
 void				neat_sprite_set_source_rect(neat_sprite*, int, int, int, int);
 
-SDL_Rect			neat_assign_rect(int, int, int, int);
-SDL_Point			neat_assign_point(int, int);
+SDL_Rect			neat_create_SDL_rect(int, int, int, int);
+SDL_Point			neat_create_SDL_point(int, int);
+neat_vec2			neat_create_vec2(double, double);
 
 neat_texture*		neat_texture_create(neat_window*, const char*);
 neat_texture*		neat_texture_create_from_text(
@@ -155,33 +168,36 @@ void neat_window_destroy(neat_window* c) {
 	free(c);
 }
 
-void neat_sprite_render(neat_sprite* object) {
-	if (object->texture == NULL) {
-		SDL_RenderFillRect(object->window->renderer, &(object->pos_rect));
+void neat_sprite_render(neat_sprite* sprite) {
+	if (sprite->texture == NULL) {
+		SDL_RenderFillRect(sprite->window->renderer, &(sprite->pos_rect));
 	}
 	else {
 		SDL_RenderCopyEx(
-			object->window->renderer,
-			object->texture,
-			&(object->source_rect),
-			&(object->pos_rect),
-			object->rotation,
-			&(object->anchor),
-			object->flip
+			sprite->window->renderer,
+			sprite->texture,
+			&(sprite->source_rect),
+			&(sprite->pos_rect),
+			sprite->rotation,
+			&(sprite->anchor_point),
+			sprite->flip
 		);
 	}
 }
 
-void neat_sprite_init(neat_sprite* object, neat_texture* tex) {
-	object->texture = tex->texture;
-	object->window = tex->window;
+void neat_sprite_init(neat_sprite* sprite, neat_texture* tex) {
+	sprite->texture = tex->texture;
+	sprite->window = tex->window;
 	int w, h;
-	SDL_QueryTexture(object->texture, NULL, NULL, &w, &h);
-	object->source_rect = neat_assign_rect(0, 0, w, h);
-	object->pos_rect = neat_assign_rect(0, 0, w, h);
-	object->anchor = neat_assign_point(w / 2, h / 2);
-	object->rotation = 0;
-	object->flip = SDL_FLIP_NONE;
+	SDL_QueryTexture(sprite->texture, NULL, NULL, &w, &h);
+	sprite->source_rect = neat_create_SDL_rect(0, 0, w, h);
+	sprite->pos_rect = neat_create_SDL_rect(0, 0, w, h);
+	sprite->pos = neat_create_vec2(0, 0);
+	sprite->anchor_point = neat_create_SDL_point(w / 2, h / 2);
+	sprite->anchor = neat_create_vec2(w / 2, h / 2);
+	sprite->rotation = 0;
+	sprite->scale = neat_create_vec2(1,1);
+	sprite->flip = SDL_FLIP_NONE;
 }
 
 neat_sprite* neat_sprite_create(neat_texture* tex) {
@@ -190,18 +206,36 @@ neat_sprite* neat_sprite_create(neat_texture* tex) {
 	return sprite;
 }
 
+void neat_sprite_set_anchor(neat_sprite* sprite, double x, double y) {
+	sprite->anchor.x = x;
+	sprite->anchor.y = y;
+	sprite->anchor_point.x = x;
+	sprite->anchor_point.y = y;
+}
+
+void neat_sprite_set_scale(neat_sprite* sprite, double sx, double sy) {
+	sprite->scale.x = sx;
+	sprite->scale.y = sy;
+
+	sprite->pos_rect.w = sprite->source_rect.w * sprite->scale.x;
+	sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
+
+	sprite->anchor_point.x = sprite->anchor.x * sx;
+	sprite->anchor_point.y = sprite->anchor.y * sy;
+}
+
 void neat_sprite_move(neat_sprite* sprite, double x, double y) {
-	sprite->pos_rect.x += x;
-	sprite->pos_rect.y += y;
-	sprite->anchor.x += x;
-	sprite->anchor.y += y;
+	sprite->pos.x += x;
+	sprite->pos.y += y;
+	sprite->pos_rect.x = sprite->pos.x;
+	sprite->pos_rect.y = sprite->pos.y;
 }
 
 void neat_sprite_move_to(neat_sprite* sprite, double x, double y) {
-	sprite->pos_rect.x = x;
-	sprite->pos_rect.y = y;
-	sprite->anchor.x = x + sprite->pos_rect.w / 2;
-	sprite->anchor.y = y + sprite->pos_rect.h / 2;
+	sprite->pos.x = x;
+	sprite->pos.y = y;
+	sprite->pos_rect.x = sprite->pos.x;
+	sprite->pos_rect.y = sprite->pos.y;
 }
 
 void neat_sprite_set_source_rect(neat_sprite* sprite, int x, int y, int w, int h) {
@@ -209,10 +243,8 @@ void neat_sprite_set_source_rect(neat_sprite* sprite, int x, int y, int w, int h
 	sprite->source_rect.y = y;
 	sprite->source_rect.w = w;
 	sprite->source_rect.h = h;
-	sprite->pos_rect.w = w;
-	sprite->pos_rect.h = h;
-	sprite->anchor.x = sprite->pos_rect.x + w / 2;
-	sprite->anchor.y = sprite->pos_rect.y + h / 2;
+	sprite->pos_rect.w = sprite->source_rect.w * sprite->scale.x;
+	sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
 }
 
 
@@ -220,7 +252,7 @@ void neat_sprite_destroy(neat_sprite* sprite) {
 	free(sprite);
 }
 
-SDL_Rect neat_assign_rect(int x, int y, int w, int h) {
+SDL_Rect neat_create_SDL_rect(int x, int y, int w, int h) {
 	SDL_Rect r;
 	r.x = x;
 	r.y = y;
@@ -230,8 +262,16 @@ SDL_Rect neat_assign_rect(int x, int y, int w, int h) {
 	return r;
 }
 
-SDL_Point neat_assign_point(int x, int y) {
+SDL_Point neat_create_SDL_point(int x, int y) {
 	SDL_Point p;
+	p.x = x;
+	p.y = y;
+
+	return p;
+}
+
+neat_vec2 neat_create_vec2(double x, double y) {
+	neat_vec2 p;
 	p.x = x;
 	p.y = y;
 

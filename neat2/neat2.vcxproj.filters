@@ -34,6 +34,12 @@
     <None Include="main.lua">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="game.lua">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="color.lua">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt">

@@ -1,9 +1,6 @@
 todo
-- set origin quad
 - change neat.h to return int instead of void
-- fix assign rect and assign point
-- investigate movement broken by SDL_Rect using ints
-- query texture width and height
+- query texture width and height functions
 - structure gameloop
 - add colors
 - add  dt calculation
@@ -14,3 +11,5 @@ todo
 - investigate network
 
 done
+- fix assign rect and assign point
+- investigate movement broken by SDL_Rect using ints
