@@ -307,7 +307,6 @@ neat_texture* neat_texture_create(neat_window* window, const char* file) {
 		SDL_FreeSurface(loaded_surface);
 		return new_texture;
 	}
-	//SDL_FreeSurface(loaded_surface);
 }
 
 void neat_texture_destroy(neat_texture* t) {

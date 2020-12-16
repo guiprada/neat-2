@@ -19,21 +19,21 @@ window2, id_window2 = neat.new_window("teste neat_lua 2", 500, 100, screen_width
 
 red = neat.new_color( 255, 0, 0, 255)
 blue = neat.new_color( 0, 0, 255, 255)
-circle_texture1 = neat.new_texture(window1, "assets/square_32.png")
-circle_texture2 = neat.new_texture(window2, "assets/square_32.png")
+circle_texture1 = neat.new_texture("assets/square_32.png", window1)
+circle_texture2 = neat.new_texture("assets/square_32.png", window2)
 
 circle1 = neat.new_sprite(circle_texture1)
 circle1:move_to(math.floor(screen_width/2)-16, math.floor(screen_height/2 -16))
 circle2 = neat.new_sprite(circle_texture2)
 circle2:move_to(math.floor(screen_width/2 -16), math.floor(screen_height/2 -16))
 
-texto_texture1 = neat.new_text_texture(window1, "Ola Mundo", font1)
+texto_texture1 = neat.new_text_texture("Ola Mundo", font1,red, window1)
 texto1 = neat.new_sprite(texto_texture1)
 texto1:move_to(20,20)
 texto1:set_rotation(20)
 texto1:set_anchor(20,20)
 
-texto_texture2 = neat.new_text_texture(window2, "focus : ", font1)
+texto_texture2 = neat.new_text_texture("focus : ", font1, red, window2)
 texto2 = neat.new_sprite(texto_texture2)
 texto2:move_to(0,0)
 
@@ -44,7 +44,7 @@ while is_running do
 	local this_time = os.clock()
 	local delta_time = this_time - last_time
 	last_time = this_time
-	print(1/delta_time, delta_time)
+	--print(1/delta_time, delta_time)
     if (neat.is_key_pressed(scancodes["U"])) then
         print("u")
     end
@@ -64,18 +64,18 @@ while is_running do
             end
             --print(arg1 .. " " ..arg2)
         elseif(event == "quit")then
-            if arg1 == id_window1 then
+            if window1 and arg1 == id_window1 then
                 window1:hide()
                 window1 = nil
             end
-            if arg1 == id_window2 then
+            if window2 and arg1 == id_window2 then
                 window2:hide()
                 window2 = nil
             end
             --collectgarbage('collect')
 
         elseif(window2 and event == "focus")then
-            texto_texture2 = neat.new_text_texture(window2, "focus : " .. tostring(arg1), font1)
+            texto_texture2 = neat.new_text_texture("focus : " .. tostring(arg1), font1, red, window2)
             texto2 = neat.new_sprite(texto_texture2)
 
         elseif(event == "keyup")then
@@ -84,8 +84,10 @@ while is_running do
         elseif(event == "keydown")then
             -- print(arg2)
             -- print(arg1)
-            texto_texture2 = neat.new_text_texture(window2, "focus : " .. tostring(arg1), font1)
-            texto2 = neat.new_sprite(texto_texture2)
+			if window2 then
+				texto_texture2 = neat.new_text_texture("focus : " .. tostring(arg1), font1, red, window2)
+				texto2 = neat.new_sprite(texto_texture2)
+			end
         end
         --event, arg1, arg2 = neat.get_event()
     until(not event)
@@ -95,7 +97,7 @@ while is_running do
         circle1:render()
         texto1:render()
         circle1:move(circle1_speed,0)
-        neat.rect_fill(window1, red, 100, 100, 50, 50)
+        neat.rect_fill(100, 100, 50, 50, red, window1)
         window1:present()
     end
 

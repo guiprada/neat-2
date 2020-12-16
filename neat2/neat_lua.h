@@ -9,11 +9,15 @@
 
 #include "neat.h"
 
+neat_window * DEFAULT_WINDOW = NULL;
+
 static neat_window* check_and_get_window(lua_State* L, int stack_pos);
 static neat_sprite* check_and_get_sprite(lua_State* L, int stack_pos);
 static neat_texture* check_and_get_texture(lua_State* L, int stack_pos);
 static SDL_Color* check_and_get_color(lua_State* L, int stack_pos);
 static TTF_Font* check_and_get_font(lua_State* L, int stack_pos);
+
+static int lua_neat_start(lua_State* L);
 
 static int lua_window_create(lua_State* L);
 static int lua_window_destroy(lua_State* L);
@@ -193,6 +197,9 @@ static int lua_window_create(lua_State* L) {
 		(int)lua_tointeger(L, 4),
 		(int)lua_tointeger(L, 5));
 
+	if (DEFAULT_WINDOW == NULL) {
+		DEFAULT_WINDOW = window;
+	}
 	luaL_getmetatable(L, "neat.window");
 	lua_setmetatable(L, -2);
 
@@ -205,7 +212,10 @@ static int lua_window_destroy(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) return 0;
 
-	neat_window_destroy(check_and_get_window(L, 1));
+	neat_window* window = check_and_get_window(L, 1);
+	if (window == DEFAULT_WINDOW) printf("Default Window was destroied!");
+	
+	neat_window_destroy(window);
 
 	return 0;
 }
@@ -411,18 +421,22 @@ static int lua_sprite_set_scale(lua_State* L) {
 
 static int lua_texture_create(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 2) return 0;
+	neat_window* window = NULL;
+	if (n == 2) {
+		window = check_and_get_window(L, 2);
+	}
+	else if (n == 1) {
+		window = DEFAULT_WINDOW;
+	}else return 0;
 
-	if (!lua_isstring(L, 2)) {
+	if (!lua_isstring(L, 1)) {
 		lua_pushstring(L, "Incorrect argument to lua_texture_create()");
 		lua_error(L);
 	}
 
-	neat_window* window = check_and_get_window(L, 1);
-
 	neat_texture* new_texture = neat_texture_create(
 		window,
-		lua_tostring(L, 2)
+		lua_tostring(L, 1)
 	);
 	neat_texture** tex = ((neat_texture**)lua_newuserdata(
 		L,
@@ -439,9 +453,16 @@ static int lua_texture_create(lua_State* L) {
 
 static int lua_texture_create_from_text(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 4 && n != 3) return 0;
+	neat_window* window = NULL;
+	if (n == 4) {
+		window = check_and_get_window(L, 4);
+	}
+	else if (n == 3) {
+		window = DEFAULT_WINDOW;
+	}
+	else return 0;
 
-	if (!lua_isstring(L, 2)) {
+	if (!lua_isstring(L, 1)) {
 		lua_pushstring(
 			L,
 			"Incorrect argument to lua_texture_create_from_text()"
@@ -449,19 +470,15 @@ static int lua_texture_create_from_text(lua_State* L) {
 		lua_error(L);
 	}
 
-	TTF_Font* font = check_and_get_font(L, 3);
-	neat_window* window = check_and_get_window(L, 1);
+	TTF_Font* font = check_and_get_font(L, 2);
 
-	SDL_Color  color = YELLOW;
-	if (n == 4) {
-		color = *check_and_get_color(L, 4);
-	}
-
+	SDL_Color  color = *check_and_get_color(L, 3);
+	
 	neat_texture* new_texture = neat_texture_create_from_text(
 		window,
 		font,
 		color,
-		lua_tostring(L, 2)
+		lua_tostring(L, 1)
 	);
 	neat_texture** tex = ((neat_texture**)lua_newuserdata(
 		L,
@@ -524,35 +541,41 @@ static int lua_font_destroy(lua_State* L) {
 
 static int lua_rect_fill(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 6) return 0;
-
-	neat_window* w = check_and_get_window(L, 1);
-	SDL_Color* color = check_and_get_color(L, 2);
+	neat_window* window = NULL;
+	if (n == 6) {
+		window = check_and_get_window(L, 6);
+	}
+	else if (n == 5) {
+		window = DEFAULT_WINDOW;
+	}
+	else return 0;
+		
+	SDL_Color* color = check_and_get_color(L, 5);
 
 	SDL_Rect rect;
+	if (!lua_isinteger(L, 1)) {
+		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
+		lua_error(L);
+	}
+	else rect.x = (int)lua_tointeger(L, 1);
+
+	if (!lua_isinteger(L, 2)) {
+		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
+		lua_error(L);
+	}
+	else rect.y = (int)lua_tointeger(L, 2);
 	if (!lua_isinteger(L, 3)) {
 		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
 		lua_error(L);
 	}
-	else rect.x = (int)lua_tointeger(L, 3);
-
+	else rect.w = (int)lua_tointeger(L, 3);
 	if (!lua_isinteger(L, 4)) {
 		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
 		lua_error(L);
 	}
-	else rect.y = (int)lua_tointeger(L, 4);
-	if (!lua_isinteger(L, 5)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
-	}
-	else rect.w = (int)lua_tointeger(L, 5);
-	if (!lua_isinteger(L, 6)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
-	}
-	else rect.h = (int)lua_tointeger(L, 6);
+	else rect.h = (int)lua_tointeger(L, 4);
 
-	neat_rect_fill(w, color, &rect);
+	neat_rect_fill(window, color, &rect);
 
 	return 0;
 }
@@ -561,20 +584,27 @@ static int lua_rect_fill(lua_State* L) {
 
 static int lua_render_clear(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 1) return 0;
-	if (lua_isnil(L, 1)) return 0;
-
-	neat_window* w = check_and_get_window(L, 1);
-	SDL_RenderClear(w->renderer);
+	neat_window* window = NULL;
+	if (n == 1) {
+		window = check_and_get_window(L, 1);
+	}else if (n == 0) {
+		window = DEFAULT_WINDOW;
+	}else return 0;
+		
+	SDL_RenderClear(window->renderer);
 	return 0;
 }
 
 static int lua_render_show(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 1) return 0;
+	neat_window* window = NULL;
+	if (n == 1) {
+		window = check_and_get_window(L, 1);
+	}else if (n == 0) {
+		window = DEFAULT_WINDOW;
+	}else return 0;
 
-	neat_window* w = check_and_get_window(L, 1);
-	SDL_RenderPresent(w->renderer);
+	SDL_RenderPresent(window->renderer);
 
 	return 0;
 }

@@ -14,7 +14,6 @@ int main()
 	SDL_version compiled;
 	SDL_version linked;
 
-
 	SDL_VERSION(&compiled);
 	SDL_GetVersion(&linked);
 	printf("Compiled with SDL version %d.%d.%d.\n",
@@ -27,7 +26,6 @@ int main()
 	lua_State* L;
 
 	L = luaL_newstate();
-
 
 	luaL_openlibs(L);
 
