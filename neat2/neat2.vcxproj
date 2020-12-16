@@ -84,9 +84,11 @@
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
+del $(OutDir)game.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
-xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)color.lua  $(OutDir)
+xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,9 +105,11 @@ xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
+del $(OutDir)game.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
-xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)color.lua  $(OutDir)
+xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,9 +130,11 @@ xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
+del $(OutDir)game.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
-xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)color.lua  $(OutDir)
+xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,9 +155,11 @@ xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
       <Command>del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
+del $(OutDir)game.lua
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
-xcopy /y $(ProjectDir)color.lua  $(OutDir)</Command>
+xcopy /y $(ProjectDir)color.lua  $(OutDir)
+xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

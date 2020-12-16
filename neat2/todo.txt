@@ -1,5 +1,6 @@
 todo
 - change window management
+- window get_id
 - new_texture should be a window method
 - window should have a render stack
 - sprite should have a hidden property

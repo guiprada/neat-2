@@ -609,7 +609,8 @@ static int lua_render_show(lua_State* L) {
 		window = DEFAULT_WINDOW;
 	}else return 0;
 
-	SDL_RenderPresent(window->renderer);
+	if(window->hidden == false)
+		SDL_RenderPresent(window->renderer);
 
 	return 0;
 }
@@ -666,7 +667,12 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 				return 2;
 			}
 			if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
-				lua_pushstring(L, "focus");
+				lua_pushstring(L, "focus_gained");
+				lua_pushinteger(L, event.window.windowID);
+				return 2;
+			}
+			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+				lua_pushstring(L, "focus_lost");
 				lua_pushinteger(L, event.window.windowID);
 				return 2;
 			}
