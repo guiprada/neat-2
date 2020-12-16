@@ -1,5 +1,8 @@
 todo
 - change window management
+- new_texture should be a window method
+- window should have a render stack
+- sprite should have a hidden property
 - define color c- side
 - print function
 - sound

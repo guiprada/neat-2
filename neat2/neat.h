@@ -19,14 +19,14 @@ struct vec2_struct {
 
 typedef struct window_struct neat_window;
 struct window_struct {
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-	bool					hidden;
+	SDL_Window*		window;
+	SDL_Renderer*	renderer;
+	bool			hidden;
 };
 
 typedef struct sprite_struct neat_sprite;
 struct sprite_struct {
-	SDL_Texture* texture;
+	SDL_Texture*		texture;
 	SDL_Rect			source_rect;
 	SDL_Rect			pos_rect;
 	neat_vec2			pos;
@@ -35,7 +35,7 @@ struct sprite_struct {
 	double				rotation;
 	neat_vec2			scale;
 	SDL_RendererFlip	flip;
-	neat_window* window;
+	neat_window*		window;
 };
 
 typedef struct neat_texture_struct	neat_texture;
@@ -71,12 +71,7 @@ SDL_Point			neat_create_SDL_point(int, int);
 neat_vec2			neat_create_vec2(double, double);
 
 neat_texture*		neat_texture_create(neat_window*, const char*);
-neat_texture*		neat_texture_create_from_text(
-	neat_window*,
-	TTF_Font*,
-	SDL_Color,
-	const char*
-);
+neat_texture*		neat_texture_create_from_text(neat_window*, TTF_Font*, SDL_Color, const char*);
 void				neat_texture_destroy(neat_texture*);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -313,9 +308,10 @@ void neat_texture_destroy(neat_texture* t) {
 	if (t != NULL) {
 		if (t->texture != NULL) {
 			SDL_DestroyTexture(t->texture);
-			t->texture = NULL;
+			//t->texture = NULL;
 		}
 		free(t);
+		//t = NULL;
 	}
 	return;
 }

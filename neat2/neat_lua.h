@@ -9,7 +9,11 @@
 
 #include "neat.h"
 
+////////////////////////////////////////////////////////////////////////////////
+
 neat_window * DEFAULT_WINDOW = NULL;
+
+////////////////////////////////////////////////////////////////////////////////
 
 static neat_window* check_and_get_window(lua_State* L, int stack_pos);
 static neat_sprite* check_and_get_sprite(lua_State* L, int stack_pos);
@@ -94,7 +98,7 @@ static const struct luaL_Reg neat_sprite_methods[] = {
 };
 
 static const struct luaL_Reg neat_texture_methods[] = {
-	{"__gc", lua_texture_destroy},
+	{"destroy", lua_texture_destroy},
 	{NULL, NULL}
 };
 
@@ -198,7 +202,7 @@ static int lua_window_create(lua_State* L) {
 		(int)lua_tointeger(L, 5));
 
 	if (DEFAULT_WINDOW == NULL) {
-		DEFAULT_WINDOW = window;
+		DEFAULT_WINDOW = *window;
 	}
 	luaL_getmetatable(L, "neat.window");
 	lua_setmetatable(L, -2);
@@ -211,9 +215,10 @@ static int lua_window_create(lua_State* L) {
 static int lua_window_destroy(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) return 0;
-
+	
 	neat_window* window = check_and_get_window(L, 1);
-	if (window == DEFAULT_WINDOW) printf("Default Window was destroied!");
+	if (window == DEFAULT_WINDOW)
+		printf("Default Window was destroied!\n");
 	
 	neat_window_destroy(window);
 

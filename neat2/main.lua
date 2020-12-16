@@ -19,7 +19,7 @@ window2, id_window2 = neat.new_window("teste neat_lua 2", 500, 100, screen_width
 
 red = neat.new_color( 255, 0, 0, 255)
 blue = neat.new_color( 0, 0, 255, 255)
-circle_texture1 = neat.new_texture("assets/square_32.png", window1)
+circle_texture1 = neat.new_texture("assets/square_32.png")
 circle_texture2 = neat.new_texture("assets/square_32.png", window2)
 
 circle1 = neat.new_sprite(circle_texture1)
@@ -66,13 +66,17 @@ while is_running do
         elseif(event == "quit")then
             if window1 and arg1 == id_window1 then
                 window1:hide()
+				--circle_texture1 = nil
+				--texto_texture1 = nil
                 window1 = nil
             end
             if window2 and arg1 == id_window2 then
                 window2:hide()
+				--circle_texture2 = nil
+				--texto_texture2 = nil
                 window2 = nil
             end
-            --collectgarbage('collect')
+            collectgarbage('collect')
 
         elseif(window2 and event == "focus")then
             texto_texture2 = neat.new_text_texture("focus : " .. tostring(arg1), font1, red, window2)
