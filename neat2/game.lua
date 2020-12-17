@@ -4,6 +4,10 @@ local color = require "color"
 
 function game.load(window, width, height)
 	game.font = neat.new_font("fonts/PressStart2P-Regular.ttf", 48)
+	game.font = neat.new_font("fonts/GamjaFlower-Regular.ttf", 48)
+	game.font = neat.new_font("fonts/PlayfairDisplaySC-Italic.ttf", 48)
+	game.font = neat.new_font("fonts/MS/times.ttf", 48)
+	game.font = neat.new_font("fonts/MS/arial.ttf", 48)
 
 	-- windows size
 	game.width, game.height = 500, 500

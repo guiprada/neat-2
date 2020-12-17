@@ -38,6 +38,7 @@ static int lua_sprite_move_to(lua_State* L);
 static int lua_sprite_set_rotation(lua_State* L);
 static int lua_sprite_set_anchor(lua_State* L);
 static int lua_sprite_set_source_rect(lua_State* L);
+static int lua_sprite_set_source_rect_and_anchor(lua_State* L);
 static int lua_sprite_set_scale(lua_State* L);
 
 static int lua_texture_create(lua_State* L);
@@ -186,7 +187,7 @@ static int lua_window_create(lua_State* L) {
 	if (n != 5) return 0;
 	for (int i = 1; i <= n; i++) {
 		if (!lua_isstring(L, i)) {
-			lua_pushstring(L, "Incorrect argument to lua_create_window()");
+			lua_pushstring(L, "Incorrect argument to lua_window_create_()");
 			lua_error(L);
 		}
 	}
@@ -217,8 +218,10 @@ static int lua_window_destroy(lua_State* L) {
 	if (n != 1) return 0;
 	
 	neat_window* window = check_and_get_window(L, 1);
-	if (window == DEFAULT_WINDOW)
+	if (window == DEFAULT_WINDOW) {
 		printf("Default Window was destroied!\n");
+		DEFAULT_WINDOW = NULL;
+	}
 	
 	neat_window_destroy(window);
 
@@ -372,33 +375,52 @@ static int lua_sprite_set_anchor(lua_State* L) {
 
 static int lua_sprite_set_source_rect(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 5) return 0;
-
+	if ((n != 5) || (n!=7)) return 0;
 
 	if (!lua_isinteger(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
 		lua_error(L);
 	}
 	if (!lua_isinteger(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
 		lua_error(L);
 	}
 	if (!lua_isinteger(L, 4)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
 		lua_error(L);
 	}
 	if (!lua_isinteger(L, 5)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
+		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
 		lua_error(L);
 	}
 
-	neat_sprite* sp = check_and_get_sprite(L, 1);
-	neat_sprite_set_source_rect(
-		sp,
-		(int)lua_tointeger(L, 2),
-		(int)lua_tointeger(L, 3),
-		(int)lua_tointeger(L, 4),
-		(int)lua_tointeger(L, 5));
+	neat_sprite* sprite = check_and_get_sprite(L, 1);
+	if( n==5)
+		neat_sprite_set_source_rect(
+			sprite,
+			(int)lua_tointeger(L, 2),
+			(int)lua_tointeger(L, 3),
+			(int)lua_tointeger(L, 4),
+			(int)lua_tointeger(L, 5));
+	else {
+		if (!lua_isinteger(L, 6)) {
+			lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
+			lua_error(L);
+		}
+		if (!lua_isinteger(L, 7)) {
+			lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
+			lua_error(L);
+		}
+		neat_sprite_set_source_rect_and_anchor(
+			sprite,
+			(int)lua_tointeger(L, 2),
+			(int)lua_tointeger(L, 3),
+			(int)lua_tointeger(L, 4),
+			(int)lua_tointeger(L, 5),
+			(int)lua_tointeger(L, 6),
+			(int)lua_tointeger(L, 7));
+	}
+
 
 	return 0;
 }
@@ -431,7 +453,12 @@ static int lua_texture_create(lua_State* L) {
 		window = check_and_get_window(L, 2);
 	}
 	else if (n == 1) {
-		window = DEFAULT_WINDOW;
+		if (DEFAULT_WINDOW != NULL)
+			window = DEFAULT_WINDOW;
+		else {
+			lua_pushstring(L, "Default Window does not exists!");
+			lua_error(L);
+		}
 	}else return 0;
 
 	if (!lua_isstring(L, 1)) {
@@ -463,7 +490,12 @@ static int lua_texture_create_from_text(lua_State* L) {
 		window = check_and_get_window(L, 4);
 	}
 	else if (n == 3) {
-		window = DEFAULT_WINDOW;
+		if (DEFAULT_WINDOW != NULL)
+			window = DEFAULT_WINDOW;
+		else {
+			lua_pushstring(L, "Default Window does not exists!");
+			lua_error(L);
+		}
 	}
 	else return 0;
 
@@ -526,6 +558,24 @@ static int lua_font_create(lua_State* L) {
 	*font = TTF_OpenFont(lua_tostring(L, 1), (int)lua_tointeger(L, 2));
 	luaL_getmetatable(L, "neat.font");
 	lua_setmetatable(L, -2);
+	
+	//int TTF_GetFontKerningSizeGlyphs(TTF_Font *font, Uint16 previous_ch, Uint16 ch);
+	//int TTF_GetFontKerningSizeGlyphs32(TTF_Font *font, Uint32 previous_ch, Uint32 ch);
+	//Uint16 ch1, ch2;
+	/*for (ch1 = 20; ch1 < 128; ch1++)
+		for (ch2 = 20; ch2 < 128; ch2++) {
+			int i = TTF_GetFontKerningSizeGlyphs(*font, ch1, ch2);
+			if( i!=0) printf("kerning works %d\n", i);
+		}
+	*/
+	// Render and cache all printable ASCII characters in solid black
+	//SDL_Surface *screen;
+	//SDL_Color color = { 0,0,0 };
+	//SDL_Surface *glyph_cache[128 - 20];
+	//Uint16 ch;
+	//for (ch = 20; ch < 128; ++ch) {
+	//	glyph_cache[ch - 20] = TTF_RenderGlyph_Solid(*font, ch, color);
+	//}
 
 	return 1;
 }
@@ -551,7 +601,12 @@ static int lua_rect_fill(lua_State* L) {
 		window = check_and_get_window(L, 6);
 	}
 	else if (n == 5) {
-		window = DEFAULT_WINDOW;
+		if (DEFAULT_WINDOW != NULL)
+			window = DEFAULT_WINDOW;
+		else {
+			lua_pushstring(L, "Default Window does not exists!");
+			lua_error(L);
+		}
 	}
 	else return 0;
 		
@@ -593,7 +648,12 @@ static int lua_render_clear(lua_State* L) {
 	if (n == 1) {
 		window = check_and_get_window(L, 1);
 	}else if (n == 0) {
-		window = DEFAULT_WINDOW;
+		if (DEFAULT_WINDOW != NULL)
+			window = DEFAULT_WINDOW;
+		else {
+			lua_pushstring(L, "Default Window does not exists!");
+			lua_error(L);
+		}
 	}else return 0;
 		
 	SDL_RenderClear(window->renderer);
@@ -606,7 +666,12 @@ static int lua_render_show(lua_State* L) {
 	if (n == 1) {
 		window = check_and_get_window(L, 1);
 	}else if (n == 0) {
-		window = DEFAULT_WINDOW;
+		if (DEFAULT_WINDOW != NULL)
+			window = DEFAULT_WINDOW;
+		else {
+			lua_pushstring(L, "Default Window does not exists!");
+			lua_error(L);
+		}
 	}else return 0;
 
 	if(window->hidden == false)
@@ -661,42 +726,36 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 			return 4;
 			break;
 		case SDL_WINDOWEVENT:
-			if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+			switch (event.window.event) {
+			case SDL_WINDOWEVENT_CLOSE:
 				lua_pushstring(L, "quit");
 				lua_pushinteger(L, event.window.windowID);
 				return 2;
-			}
-			if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
+			case SDL_WINDOWEVENT_FOCUS_GAINED:
 				lua_pushstring(L, "focus_gained");
 				lua_pushinteger(L, event.window.windowID);
 				return 2;
-			}
-			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+			case SDL_WINDOWEVENT_FOCUS_LOST:
 				lua_pushstring(L, "focus_lost");
 				lua_pushinteger(L, event.window.windowID);
 				return 2;
-			}
-			break;
+			};
 		case SDL_KEYDOWN:
 			lua_pushstring(L, "keydown");
 			lua_pushinteger(L, event.key.windowID);
 			lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
-
 			return 3;
-			break;
 		case SDL_KEYUP:
 			lua_pushstring(L, "keyup");
 			lua_pushinteger(L, event.key.windowID);
 			lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
 			return 3;
-			break;
 		default:
-			//printf("Unhandled Event! \n");
+			printf("Unhandled Event: %i \n", event.type);
 			return 0;
 		}
-		return 0;
+		//return 0;
 	}
-
 	lua_pushboolean(L, false);
 	return 1;
 }

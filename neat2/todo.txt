@@ -1,13 +1,15 @@
 todo
-- change window management
+- add neat_vec2  to sdl_point function?
+- struct neat_font with atlas
+- sprite create should also be a window method
 - window get_id
 - new_texture should be a window method
 - window should have a render stack
 - sprite should have a hidden property
 - define color c- side
-- print function
+- :) and we should have an animate function
 - sound
-- fix vsync
+- add vsync option and soft renderer(options infraestructure)
 - test rotations and anchors
 - center on point function
 - custom allocator
@@ -25,3 +27,14 @@ todo
 done
 - fix assign rect and assign point
 - investigate movement broken by SDL_Rect using ints
+- change window management
+- print function, investigate freetype2, or sdl2 kerning
+	stb_truetype -> https://github.com/nothings/stb/blob/master/stb_truetype.h
+	sdl2 and freetype example -> 
+		https://discourse.libsdl.org/t/some-example-of-using-freetype-2-harbuzz-with-sdl2/20294
+		https://github.com/wutipong/drawtext-sdl2-freetype2-harfbuzz
+		https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html
+
+	https://discourse.libsdl.org/t/ttf-getfontkerningsize-issue/20718 fixed sdl kerning
+- change source_rect should receive an optional new anchor
+- check default_window exists and error if not

@@ -65,6 +65,7 @@ void				neat_sprite_set_anchor(neat_sprite*, double, double);
 void				neat_sprite_move(neat_sprite*, double, double);
 void				neat_sprite_move_to(neat_sprite*, double, double);
 void				neat_sprite_set_source_rect(neat_sprite*, int, int, int, int);
+void				neat_sprite_set_source_rect_and_anchor(neat_sprite*, int, int, int, int, int, int);
 
 SDL_Rect			neat_create_SDL_rect(int, int, int, int);
 SDL_Point			neat_create_SDL_point(int, int);
@@ -236,24 +237,43 @@ void neat_sprite_set_source_rect(neat_sprite* sprite, int x, int y, int w, int h
 	sprite->source_rect.x = x;
 	sprite->source_rect.y = y;
 
-	double sx = w / sprite->source_rect.w;
-	double sy = h / sprite->source_rect.h;
+	if ((w != sprite->source_rect.w) || (h != sprite->source_rect.h)) {
+		double sx = w / sprite->source_rect.w;
+		double sy = h / sprite->source_rect.h;
 
-	sprite->source_rect.w = w;
-	sprite->source_rect.h = h;
-	sprite->pos_rect.w = sprite->source_rect.w * sprite->scale.x;
-	sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
+		sprite->source_rect.w = w;
+		sprite->source_rect.h = h;
+		sprite->pos_rect.w = sprite->source_rect.w * sprite->scale.x;
+		sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
 
-	if (sprite->anchor_set) {
-		sprite->anchor_point.x = sprite->anchor_point.x * sprite->scale.x * sx;
-		sprite->anchor_point.y = sprite->anchor_point.y * sprite->scale.y * sy;
-	}
-	else {
-		sprite->anchor_point.x = sprite->pos_rect.w / 2;
-		sprite->anchor_point.y = sprite->pos_rect.h / 2;
+		if (sprite->anchor_set) {
+			sprite->anchor_point.x = sprite->anchor_point.x * sprite->scale.x * sx;
+			sprite->anchor_point.y = sprite->anchor_point.y * sprite->scale.y * sy;
+		}
+		else {
+			sprite->anchor_point.x = sprite->pos_rect.w / 2;
+			sprite->anchor_point.y = sprite->pos_rect.h / 2;
+		}
 	}
 }
 
+void neat_sprite_set_source_rect_and_anchor(neat_sprite* sprite, int x, int y, int w, int h, int cx, int cy) {
+	sprite->source_rect.x = x;
+	sprite->source_rect.y = y;
+
+	if ((w != sprite->source_rect.w) || (h != sprite->source_rect.h)) {
+		sprite->source_rect.w = w;
+		sprite->source_rect.h = h;
+		sprite->pos_rect.w = sprite->source_rect.w * sprite->scale.x;
+		sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
+
+		sprite->anchor_point.x = cx;
+		sprite->anchor_point.y = cy;
+		if (!sprite->anchor_set) {
+			sprite->anchor_set = true;
+		}
+	}
+}
 
 void neat_sprite_destroy(neat_sprite* sprite) {
 	free(sprite);
