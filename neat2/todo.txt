@@ -1,5 +1,16 @@
 todo
-- add neat_vec2  to sdl_point function?
+- check errors on
+	neat_stop
+	neat_window_destroy
+	neat_sprite_render
+- neat lua should call registered callbacks itself
+- check renderer flip
+- export initialization constants to  lua
+- read mouse position
+- neat functions should return error codes
+	neat lua should report them
+- an sdl2 based renderer camera would be hard to support rotation
+	it would require a render to texture
 - struct neat_font with atlas
 - sprite create should also be a window method
 - window get_id
@@ -38,3 +49,33 @@ done
 	https://discourse.libsdl.org/t/ttf-getfontkerningsize-issue/20718 fixed sdl kerning
 - change source_rect should receive an optional new anchor
 - check default_window exists and error if not
+- add neat_vec2  to sdl_point function?
+- fix color.lua
+- create  internal anchor point and vec2
+
+------------------------------------------------------------ roadmaps
+
+roadmap to 1.0
+- sound support
+- fast print support
+- camera support
+- tilemap support with editor
+- color pallete support
+- autorezing support
+
+roadmap to 1.5
+- gui widgets
+- android port
+- linux port
+
+roadmap to 2.0
+- network support
+- opengl renderer
+- lisp repl
+- wren support
+
+roadmap to 2.5
+- Game DSL support
+- vulkan renderer
+- c# support
+

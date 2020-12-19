@@ -81,10 +81,16 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>del $(OutDir)utils.lua
+      <Command>rmdir /S /Q $(OutDir)fonts
+rmdir /S /Q $(OutDir)assets
+del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
 del $(OutDir)game.lua
+mkdir $(OutDir)fonts
+xcopy /s /y $(ProjectDir)fonts  $(OutDir)fonts
+mkdir $(OutDir)assets
+xcopy /s /y $(ProjectDir)assets  $(OutDir)assets
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
 xcopy /y $(ProjectDir)color.lua  $(OutDir)
@@ -102,10 +108,16 @@ xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>del $(OutDir)utils.lua
+      <Command>rmdir /S /Q $(OutDir)fonts
+rmdir /S /Q $(OutDir)assets
+del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
 del $(OutDir)game.lua
+mkdir $(OutDir)fonts
+xcopy /s /y $(ProjectDir)fonts  $(OutDir)fonts
+mkdir $(OutDir)assets
+xcopy /s /y $(ProjectDir)assets  $(OutDir)assets
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
 xcopy /y $(ProjectDir)color.lua  $(OutDir)
@@ -127,10 +139,16 @@ xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>del $(OutDir)utils.lua
+      <Command>rmdir /S /Q $(OutDir)fonts
+rmdir /S /Q $(OutDir)assets
+del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
 del $(OutDir)game.lua
+mkdir $(OutDir)fonts
+xcopy /s /y $(ProjectDir)fonts  $(OutDir)fonts
+mkdir $(OutDir)assets
+xcopy /s /y $(ProjectDir)assets  $(OutDir)assets
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
 xcopy /y $(ProjectDir)color.lua  $(OutDir)
@@ -152,10 +170,16 @@ xcopy /y $(ProjectDir)game.lua  $(OutDir)</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>del $(OutDir)utils.lua
+      <Command>rmdir /S /Q $(OutDir)fonts
+rmdir /S /Q $(OutDir)assets
+del $(OutDir)utils.lua
 del $(OutDir)main.lua
 del $(OutDir)color.lua
 del $(OutDir)game.lua
+mkdir $(OutDir)fonts
+xcopy /s /y $(ProjectDir)fonts  $(OutDir)fonts
+mkdir $(OutDir)assets
+xcopy /s /y $(ProjectDir)assets  $(OutDir)assets
 xcopy /y $(ProjectDir)utils.lua  $(OutDir)
 xcopy /y $(ProjectDir)main.lua  $(OutDir)
 xcopy /y $(ProjectDir)color.lua  $(OutDir)

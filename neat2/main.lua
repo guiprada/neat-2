@@ -70,7 +70,7 @@ while is_running do
 	local this_time = os.clock()
 	local delta_time = this_time - last_time
 	last_time = this_time
-	--print(1/delta_time, delta_time)
+	print(1/delta_time, delta_time)
 
 	window1.functions.update(delta_time)
 end

@@ -31,6 +31,7 @@ struct sprite_struct {
 	SDL_Rect			pos_rect;
 	neat_vec2			pos;
 	SDL_Point			anchor_point;
+	neat_vec2			anchor;
 	bool				anchor_set;
 	double				rotation;
 	neat_vec2			scale;
@@ -62,13 +63,15 @@ neat_sprite*		neat_sprite_create(neat_texture*);
 void				neat_sprite_destroy(neat_sprite*);
 void				neat_sprite_set_scale(neat_sprite*, double, double);
 void				neat_sprite_set_anchor(neat_sprite*, double, double);
+void				neat_sprite_set_rotation(neat_sprite*, double);
 void				neat_sprite_move(neat_sprite*, double, double);
 void				neat_sprite_move_to(neat_sprite*, double, double);
 void				neat_sprite_set_source_rect(neat_sprite*, int, int, int, int);
 void				neat_sprite_set_source_rect_and_anchor(neat_sprite*, int, int, int, int, int, int);
 
 SDL_Rect			neat_create_SDL_rect(int, int, int, int);
-SDL_Point			neat_create_SDL_point(int, int);
+SDL_Point			neat_create_SDL_Point(int, int);
+SDL_Point			neat_create_SDL_Point_from_neat_vec2(neat_vec2*);
 neat_vec2			neat_create_vec2(double, double);
 
 neat_texture*		neat_texture_create(neat_window*, const char*);
@@ -164,14 +167,14 @@ void neat_window_destroy(neat_window* c) {
 	free(c);
 }
 
-void neat_sprite_render(neat_sprite* sprite) {
+void neat_sprite_render(neat_sprite* sprite) {	
 	SDL_RenderCopyEx(
 		sprite->window->renderer,
 		sprite->texture,
 		&(sprite->source_rect),
 		&(sprite->pos_rect),
 		sprite->rotation,
-		&(sprite->anchor_point),
+		&sprite->anchor_point,
 		sprite->flip
 	);
 }
@@ -184,7 +187,7 @@ void neat_sprite_init(neat_sprite* sprite, neat_texture* tex) {
 	sprite->source_rect = neat_create_SDL_rect(0, 0, w, h);
 	sprite->pos_rect = neat_create_SDL_rect(0, 0, w, h);
 	sprite->pos = neat_create_vec2(0, 0);
-	sprite->anchor_point = neat_create_SDL_point(w / 2, h / 2);
+	sprite->anchor = neat_create_vec2(w / 2, h / 2);
 	sprite->anchor_set = false;
 	sprite->rotation = 0;
 	sprite->scale = neat_create_vec2(1,1);
@@ -197,10 +200,16 @@ neat_sprite* neat_sprite_create(neat_texture* tex) {
 	return sprite;
 }
 
-void neat_sprite_set_anchor(neat_sprite* sprite, int x, int y) {
+void neat_sprite_set_anchor(neat_sprite* sprite, double x, double y) {
 	sprite->anchor_set = true;
-	sprite->anchor_point.x = x;
-	sprite->anchor_point.y = y;
+	sprite->anchor.x = x;
+	sprite->anchor.y = y;
+	sprite->anchor_point.x = (int)x;
+	sprite->anchor_point.y = (int)y;
+}
+
+void neat_sprite_set_rotation(neat_sprite* sprite, double rotation) {
+	sprite->rotation = rotation;
 }
 
 void neat_sprite_set_scale(neat_sprite* sprite, double sx, double sy) {
@@ -211,11 +220,13 @@ void neat_sprite_set_scale(neat_sprite* sprite, double sx, double sy) {
 	sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
 
 	if (sprite->anchor_set) {
-		sprite->anchor_point.x = sprite->anchor_point.x * sx;
-		sprite->anchor_point.y = sprite->anchor_point.y * sy;
+		sprite->anchor.x = sprite->anchor.x * sx;
+		sprite->anchor.y = sprite->anchor.y * sy;
+		sprite->anchor_point.x = (int)sprite->anchor.x;
+		sprite->anchor_point.y = (int)sprite->anchor.y;
 	} else {
-		sprite->anchor_point.x = sprite->pos_rect.w / 2;
-		sprite->anchor_point.y = sprite->pos_rect.h / 2;
+		sprite->anchor.x = sprite->pos_rect.w / 2;
+		sprite->anchor.y = sprite->pos_rect.h / 2;
 	}
 }
 
@@ -247,12 +258,14 @@ void neat_sprite_set_source_rect(neat_sprite* sprite, int x, int y, int w, int h
 		sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
 
 		if (sprite->anchor_set) {
-			sprite->anchor_point.x = sprite->anchor_point.x * sprite->scale.x * sx;
-			sprite->anchor_point.y = sprite->anchor_point.y * sprite->scale.y * sy;
+			sprite->anchor.x = sprite->anchor.x * sprite->scale.x * sx;
+			sprite->anchor.y = sprite->anchor.y * sprite->scale.y * sy;
+			sprite->anchor_point.x = (int)sprite->anchor.x;
+			sprite->anchor_point.y = (int)sprite->anchor.y;
 		}
 		else {
-			sprite->anchor_point.x = sprite->pos_rect.w / 2;
-			sprite->anchor_point.y = sprite->pos_rect.h / 2;
+			sprite->anchor.x = sprite->pos_rect.w / 2;
+			sprite->anchor.y = sprite->pos_rect.h / 2;
 		}
 	}
 }
@@ -267,8 +280,10 @@ void neat_sprite_set_source_rect_and_anchor(neat_sprite* sprite, int x, int y, i
 		sprite->pos_rect.w = sprite->source_rect.w * sprite->scale.x;
 		sprite->pos_rect.h = sprite->source_rect.h * sprite->scale.y;
 
-		sprite->anchor_point.x = cx;
-		sprite->anchor_point.y = cy;
+		sprite->anchor.x = cx;
+		sprite->anchor.y = cy;
+		sprite->anchor_point.x = (int)sprite->anchor.x;
+		sprite->anchor_point.y = (int)sprite->anchor.y;
 		if (!sprite->anchor_set) {
 			sprite->anchor_set = true;
 		}
@@ -289,10 +304,18 @@ SDL_Rect neat_create_SDL_rect(int x, int y, int w, int h) {
 	return r;
 }
 
-SDL_Point neat_create_SDL_point(int x, int y) {
+SDL_Point neat_create_SDL_Point(int x, int y) {
 	SDL_Point p;
 	p.x = x;
 	p.y = y;
+
+	return p;
+}
+
+SDL_Point neat_create_SDL_Point_from_neat_vec2(neat_vec2* v) {
+	SDL_Point p;
+	p.x = v->x;
+	p.y = v->y;
 
 	return p;
 }
@@ -388,5 +411,4 @@ void  neat_rect_fill(neat_window* w, SDL_Color* color, SDL_Rect* rect) {
 		old_color.b,
 		old_color.a
 	);
-	return 0;
 }
