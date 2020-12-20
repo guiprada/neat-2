@@ -440,7 +440,6 @@ static int lua_sprite_set_anchor(lua_State* L) {
 
 static int lua_sprite_set_source_rect(lua_State* L) {
 	int n = lua_gettop(L);
-	printf("n : %d", n);
 	if ((n != 5) && (n != 7)) {
 		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_set_source_rect()");
 		lua_error(L);
@@ -854,18 +853,38 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 	if (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_MOUSEMOTION:
-			lua_pushstring(L, "mouse_motion");
-			lua_pushinteger(L, event.motion.windowID);
-			lua_pushinteger(L, event.motion.x);
-			lua_pushinteger(L, event.motion.y);
-			return 4;
-			break;
+			{
+				int i;
+				i = lua_getglobal(L, "on_mouse_motion");
+				if (i == LUA_TFUNCTION) {
+					lua_pushinteger(L, event.motion.windowID);
+					lua_pushinteger(L, event.motion.x);
+					lua_pushinteger(L, event.motion.y);
+					lua_call(L, 3, 0);
+				}
+				else {
+					lua_pop(L, 1);
+				}
+				return 0;
+				break;
+			}
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_CLOSE:
-				lua_pushstring(L, "quit");
-				lua_pushinteger(L, event.window.windowID);
-				return 2;
+				{
+					int i;
+					i = lua_getglobal(L, "on_window_close");
+					//printf("%d\n", i);
+					if (i == LUA_TFUNCTION) {
+						lua_pushinteger(L, event.window.windowID);
+						lua_call(L, 1, 0);
+					}
+					else {
+						lua_pop(L, 1);
+					}
+					return 0;
+					break;
+				}
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 				lua_pushstring(L, "focus_gained");
 				lua_pushinteger(L, event.window.windowID);
@@ -886,8 +905,21 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 			lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
 			return 3;
 		default:
-			printf("Unhandled Event: %i \n", event.type);
-			return 0;
+			{
+				//printf("Unhandled Event: %i \n", event.type);
+				int i;
+				i = lua_getglobal(L, "unhandled");
+				//printf("%d\n", i);
+				if (i == LUA_TFUNCTION) {
+					lua_pushinteger(L, event.type);
+					lua_call(L, 1, 0);
+				}
+				else {
+					lua_pop(L, 1);
+				}
+
+				return 0;
+			}
 		}
 		//return 0;
 	}

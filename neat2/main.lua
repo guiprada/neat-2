@@ -18,14 +18,15 @@ local is_running = true
 local last_time = os.clock()
 
 local events = {}
-events["mouse_motion"] = function (arg1, arg2, arg3)
+function on_mouse_motion(arg1, arg2, arg3)
 	if arg1 == window1.id then
 		window1.functions.on_mouse_motion(arg2, arg3)                
     end
+	print("x: ", arg2)
 end
-events["quit"] = function (arg1, arg2, arg3)
+function on_window_close(arg1, arg2, arg3)
 	if arg1 == window1.id then
-		window1.functions.on_quit()
+		window1.functions.on_window_close()
 		window1.window = nil
 	end
 end
@@ -50,6 +51,15 @@ events["keydown"] = function (arg1, arg2, arg3)
 	end
 end
 
+
+
+
+function unhandled(event)
+	print("unhandled event:", event)
+end
+
+
+
 while is_running do
 	repeat event, arg1, arg2, arg3 = neat.get_event()
 		local f = events[event]
@@ -70,7 +80,7 @@ while is_running do
 	local this_time = os.clock()
 	local delta_time = this_time - last_time
 	last_time = this_time
-	print(1/delta_time, delta_time)
+	--print(1/delta_time, delta_time)
 
 	window1.functions.update(delta_time)
 end

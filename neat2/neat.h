@@ -125,7 +125,11 @@ int neat_start() {
 
 void neat_stop() {
 	TTF_Quit();
+
+	while (Mix_Init(0))
+		Mix_Quit();
 	Mix_CloseAudio();
+
 	IMG_Quit();
 	SDL_Quit();
 }

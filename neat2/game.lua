@@ -12,7 +12,7 @@ function game.load(window, width, height)
 
 
 	-- windows size
-	--game.window = window
+	-- game.window = window
 	game.width, game.height = 500, 500
 
 	-- create some windows, note that we also get the windows ids back
@@ -31,9 +31,9 @@ function game.load(window, width, height)
 	local rectangle_texture2 = neat.new_texture("assets/rectangle2.png")
 	game.rectangle2 = neat.new_sprite(rectangle_texture2)
 	game.rectangle2:move_to(250, 250)
-	print(game.rectangle2:get_width())
-	print(game.rectangle2:get_height())
-	print(game.rectangle2:get_dimensions())
+	--print(game.rectangle2:get_width())
+	--print(game.rectangle2:get_height())
+	--print(game.rectangle2:get_dimensions())
 
 	game.resized = false
 end
@@ -61,7 +61,7 @@ function  game.on_mouse_motion(x, y)
 	
 end
 
-function  game.on_quit()	
+function  game.on_window_close()	
 
 end
 

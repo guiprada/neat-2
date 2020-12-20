@@ -6,7 +6,7 @@ local utils = {}
 math.randomseed(os.time())
 
 function utils.run_tests()
-    print("Starting qpd.utils.run_tests()") 
+    print("Starting qpd.utils.run_tests()...") 
 
     -- test clamp
     assert(
@@ -180,7 +180,7 @@ function utils.run_tests()
         "error on utils.check_collision, test 3")
 
     -- if we got here maybe things are ok
-    print("qpd.utils.run_tests() says ok!")
+    print("qpd.utils.run_tests() we are tested :)")
 end
 
 --------------------------------------------------------------------- prototypes

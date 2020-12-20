@@ -5,6 +5,8 @@
 
 int main()
 {
+	printf("Welcome to neat_lua, Have Fun!\n");
+
 	int SDL2_start_status = neat_start();
 	if (SDL2_start_status != 0) {
 		printf("SDL2 start ERROR, status: %d\n", SDL2_start_status);

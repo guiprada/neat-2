@@ -1,8 +1,4 @@
 todo
-- check errors on
-	neat_stop
-	neat_window_destroy
-	neat_sprite_render
 - autorender stacks for sprites	sprites should render automatically
 - create a render function for textures similar to love2d
 - neat lua should call registered callbacks itself
