@@ -73,7 +73,7 @@ static const struct luaL_Reg neat_lib_functions[] = {
 	{"new_color", lua_new_color},
 	{"new_font", lua_font_create},
 	{"rect_fill", lua_rect_fill},
-	{"get_event", lua_handle_events},
+	{"dispatch_events", lua_handle_events},
 	{"is_key_pressed", lua_is_key_pressed},
 	{"define_scancodes", lua_define_scancodes},
 	{NULL, NULL}
@@ -212,7 +212,7 @@ static int lua_window_create(lua_State* L) {
 		(int)lua_tointeger(L, 3),
 		(int)lua_tointeger(L, 4),
 		(int)lua_tointeger(L, 5));
-
+	
 	if (DEFAULT_WINDOW == NULL) {
 		DEFAULT_WINDOW = *window;
 	}
@@ -850,7 +850,8 @@ static int lua_new_color(lua_State* L) {
 
 static int lua_handle_events(lua_State* L) {// returns 0 to quit
 	SDL_Event event;
-	if (SDL_PollEvent(&event)) {
+	while (SDL_PollEvent(&event)){
+	//if (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_MOUSEMOTION:
 			{
@@ -865,8 +866,6 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 				else {
 					lua_pop(L, 1);
 				}
-				return 0;
-				break;
 			}
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
@@ -874,7 +873,6 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 				{
 					int i;
 					i = lua_getglobal(L, "on_window_close");
-					//printf("%d\n", i);
 					if (i == LUA_TFUNCTION) {
 						lua_pushinteger(L, event.window.windowID);
 						lua_call(L, 1, 0);
@@ -882,34 +880,63 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 					else {
 						lua_pop(L, 1);
 					}
-					return 0;
-					break;
 				}
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
-				lua_pushstring(L, "focus_gained");
-				lua_pushinteger(L, event.window.windowID);
-				return 2;
+				{
+					int i;
+					i = lua_getglobal(L, "on_focus_gained");
+					if (i == LUA_TFUNCTION) {
+						lua_pushinteger(L, event.window.windowID);
+						lua_call(L, 1, 0);
+					}
+					else {
+						lua_pop(L, 1);
+					}
+				}				
 			case SDL_WINDOWEVENT_FOCUS_LOST:
-				lua_pushstring(L, "focus_lost");
-				lua_pushinteger(L, event.window.windowID);
-				return 2;
+				{
+					int i;
+					i = lua_getglobal(L, "on_focus_lost");
+					if (i == LUA_TFUNCTION) {
+						lua_pushinteger(L, event.window.windowID);
+						lua_call(L, 1, 0);
+					}
+					else {
+						lua_pop(L, 1);
+					}
+				}
 			};
 		case SDL_KEYDOWN:
-			lua_pushstring(L, "keydown");
-			lua_pushinteger(L, event.key.windowID);
-			lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
-			return 3;
+			{
+				int i;
+				i = lua_getglobal(L, "on_keydown");
+				if (i == LUA_TFUNCTION) {
+					lua_pushinteger(L, event.key.windowID);
+					lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
+					lua_call(L, 2, 0);
+				}
+				else {
+					lua_pop(L, 1);
+				}
+			}
 		case SDL_KEYUP:
-			lua_pushstring(L, "keyup");
-			lua_pushinteger(L, event.key.windowID);
-			lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
-			return 3;
+			{
+				int i;
+				i = lua_getglobal(L, "on_keyup");
+				if (i == LUA_TFUNCTION) {
+					lua_pushinteger(L, event.key.windowID);
+					lua_pushstring(L, SDL_GetKeyName(event.key.keysym.sym));
+					lua_call(L, 2, 0);
+				}
+				else {
+					lua_pop(L, 1);
+				}
+			}
 		default:
 			{
 				//printf("Unhandled Event: %i \n", event.type);
 				int i;
 				i = lua_getglobal(L, "unhandled");
-				//printf("%d\n", i);
 				if (i == LUA_TFUNCTION) {
 					lua_pushinteger(L, event.type);
 					lua_call(L, 1, 0);
@@ -917,14 +944,10 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 				else {
 					lua_pop(L, 1);
 				}
-
-				return 0;
 			}
 		}
-		//return 0;
-	}
-	lua_pushboolean(L, false);
-	return 1;
+	}	
+	return 0;
 }
 
 static int lua_is_key_pressed(lua_State* L) {// returns 0 to quit

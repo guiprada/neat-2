@@ -1,12 +1,9 @@
 todo
 - autorender stacks for sprites	sprites should render automatically
 - create a render function for textures similar to love2d
-- neat lua should call registered callbacks itself
-- check renderer flip
+- check renderer flip lua functions
 - export initialization constants to  lua
-- read mouse position
-- neat functions should return error codes
-	neat lua should report them
+- read mouse buttons
 - an sdl2 based renderer camera would be hard to support rotation
 	it would require a render to texture
 - struct neat_font with atlas
@@ -50,6 +47,7 @@ done
 - add neat_vec2  to sdl_point function?
 - fix color.lua
 - create  internal anchor point and vec2
+- neat lua should call registered callbacks itself
 
 ------------------------------------------------------------ roadmaps
 

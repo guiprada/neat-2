@@ -1,7 +1,6 @@
 game = {}
 local scancodes = neat.define_scancodes()
-local color = require "color"
-local utils = require "utils"
+
 
 function game.load(window, width, height)
 	game.font = neat.new_font("fonts/PressStart2P-Regular.ttf", 48)
@@ -65,7 +64,7 @@ function  game.on_window_close()
 
 end
 
-function  game.on_focus_gain()	
+function  game.on_focus_gained()	
 
 end
 
@@ -83,7 +82,7 @@ end
 
 function  game.render()
 	game.circle:render()
-	neat.rect_fill(125,250,128,128, color.red)
+	neat.rect_fill(125,250,128,128, neat.color.red)
 	game.rectangle:render()
 	--game.rectangle2:render()
 	
