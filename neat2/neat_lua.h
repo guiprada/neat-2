@@ -3,11 +3,27 @@
 
 #pragma once
 
+#define LUA_ERROR_STRING_BUFFER_SIZE 255
+
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 
 #include "neat.h"
+
+void LUA_ERROR(lua_State* L, char* message) {
+	lua_Debug debug;
+	lua_getstack(L, 1, &debug);
+	lua_getinfo(L, "nSl", &debug);
+	int line = debug.currentline;
+	char* source = debug.short_src;
+	char* function = debug.name;
+
+	printf("ERROR on file: %s -- function: %s -- line: %d\n", source, function, line);
+	
+	lua_pushstring(L, message);
+	lua_error(L);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -156,7 +172,7 @@ int lua_open_neat(lua_State* L) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static neat_window* check_and_get_window(lua_State* L, int stack_pos) {
-	void** maybe_window = (void**)luaL_checkudata(L, stack_pos, "neat.window");
+	void** maybe_window = (void**)luaL_checkudata(L, stack_pos, "neat.window");	
 	luaL_argcheck(L, *maybe_window != NULL, stack_pos, "'window' expected");
 	return (neat_window*)*(maybe_window);
 }
@@ -189,13 +205,11 @@ static TTF_Font* check_and_get_font(lua_State* L, int stack_pos) {
 static int lua_window_create(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 5) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_window_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_window_create()");		
 	}
 	for (int i = 1; i <= n; i++) {
 		if (!lua_isstring(L, i)) {
-			lua_pushstring(L, "Incorrect argument to lua_window_create()");
-			lua_error(L);
+			LUA_ERROR(L, "Incorrect argument to lua_window_create()");
 		}
 	}
 	neat_window** window = (neat_window**)lua_newuserdata(
@@ -220,8 +234,7 @@ static int lua_window_create(lua_State* L) {
 static int lua_window_destroy(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_window_destroy()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_window_destroy()");
 	}
 	
 	neat_window* window = check_and_get_window(L, 1);
@@ -234,8 +247,7 @@ static int lua_window_destroy(lua_State* L) {
 static int lua_window_hide(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_window_hide()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_window_hide()");
 	}
 
 	neat_window* window = check_and_get_window(L, 1);
@@ -248,8 +260,7 @@ static int lua_window_hide(lua_State* L) {
 static int lua_window_show(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_window_show()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_window_show()");
 	}
 
 	neat_window* window = check_and_get_window(L, 1);
@@ -262,8 +273,7 @@ static int lua_window_show(lua_State* L) {
 static int lua_window_is_hidden(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_window_is_hidden()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_window_is_hidden()");
 	}
 
 	neat_window* window = check_and_get_window(L, 1);
@@ -274,8 +284,7 @@ static int lua_window_is_hidden(lua_State* L) {
 static int lua_window_is_shown(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_window_is_shown()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_window_is_shown()");
 	}
 
 	neat_window* window = check_and_get_window(L, 1);
@@ -288,16 +297,14 @@ static int lua_window_is_shown(lua_State* L) {
 static int lua_sprite_create(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 2) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_create()");
 	}
 
 	neat_window* w = check_and_get_window(L, 1);
 	neat_texture* t = check_and_get_texture(L, 2);
 
 	if (t->window != w) {
-		lua_pushstring(L, "lua_sprite_create() Error, texture does not belong to window");
-		lua_error(L);
+		LUA_ERROR(L, "lua_sprite_create() Error, texture does not belong to window");
 	}
 
 	neat_sprite** sprite = (neat_sprite**)lua_newuserdata(
@@ -315,8 +322,7 @@ static int lua_sprite_create(lua_State* L) {
 static int lua_sprite_destroy(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_destroy()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_destroy()");
 	}
 
 	neat_sprite_destroy(check_and_get_sprite(L, 1));
@@ -326,8 +332,7 @@ static int lua_sprite_destroy(lua_State* L) {
 static int lua_sprite_render(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_render()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_render()");
 	}
 	neat_sprite_render(check_and_get_sprite(L, 1));
 	return 0;
@@ -336,17 +341,14 @@ static int lua_sprite_render(lua_State* L) {
 static int lua_sprite_move(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 3) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_move()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_move()");
 	}
 
 	if (!lua_isnumber(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_move()");
 	}
 	if (!lua_isnumber(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_move()");
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
@@ -358,17 +360,14 @@ static int lua_sprite_move(lua_State* L) {
 static int lua_sprite_move_to(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 3) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_move_to()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_move_to()");
 	}
 
 	if (!lua_isnumber(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move_to()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_move_to()");
 	}
 	if (!lua_isnumber(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_move_to()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_move_to()");
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
@@ -380,13 +379,11 @@ static int lua_sprite_move_to(lua_State* L) {
 static int lua_sprite_set_rotation(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 2) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_set_rotation()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_set_rotation()");
 	}
 
 	if (!lua_isnumber(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_rotation()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_rotation()");
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
@@ -397,13 +394,11 @@ static int lua_sprite_set_rotation(lua_State* L) {
 static int lua_sprite_add_rotation(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 2) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_add_rotation()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_add_rotation()");
 	}
 
 	if (!lua_isnumber(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_add_rotation()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_add_rotation()");
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
@@ -414,17 +409,14 @@ static int lua_sprite_add_rotation(lua_State* L) {
 static int lua_sprite_set_anchor(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 3) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_set_anchor()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_set_anchor()");
 	}
 
 	if (!lua_isinteger(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_anchor()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_anchor()");
 	}
 	if (!lua_isinteger(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_anchor()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_anchor()");
 	}
 
 	neat_sprite* sp = check_and_get_sprite(L, 1);
@@ -436,25 +428,20 @@ static int lua_sprite_set_anchor(lua_State* L) {
 static int lua_sprite_set_source_rect(lua_State* L) {
 	int n = lua_gettop(L);
 	if ((n != 5) && (n != 7)) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_set_source_rect()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_set_source_rect()");
 	}
 
 	if (!lua_isinteger(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_source_rect()");
 	}
 	if (!lua_isinteger(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_source_rect()");
 	}
 	if (!lua_isinteger(L, 4)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_source_rect()");
 	}
 	if (!lua_isinteger(L, 5)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_source_rect()");
 	}
 
 	neat_sprite* sprite = check_and_get_sprite(L, 1);
@@ -467,12 +454,10 @@ static int lua_sprite_set_source_rect(lua_State* L) {
 			(int)lua_tointeger(L, 5));
 	else if (n==7) {
 		if (!lua_isinteger(L, 6)) {
-			lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
-			lua_error(L);
+			LUA_ERROR(L, "Incorrect argument to lua_sprite_set_source_rect()");
 		}
 		if (!lua_isinteger(L, 7)) {
-			lua_pushstring(L, "Incorrect argument to lua_sprite_set_source_rect()");
-			lua_error(L);
+			LUA_ERROR(L, "Incorrect argument to lua_sprite_set_source_rect()");
 		}
 		neat_sprite_set_source_rect_and_anchor(
 			sprite,
@@ -483,8 +468,7 @@ static int lua_sprite_set_source_rect(lua_State* L) {
 			(int)lua_tointeger(L, 6),
 			(int)lua_tointeger(L, 7));
 	}else {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_set_source_rect()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_set_source_rect()");
 	}
 
 	return 0;
@@ -493,17 +477,14 @@ static int lua_sprite_set_source_rect(lua_State* L) {
 static int lua_sprite_set_scale(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 3) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_set_scale()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_set_scale()");
 	}
 
 	if (!lua_isnumber(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_scale()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_scale()");
 	}
 	if (!lua_isnumber(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_sprite_set_scale()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_sprite_set_scale()");
 	}
 
 	neat_sprite* sprite = check_and_get_sprite(L, 1);
@@ -515,8 +496,7 @@ static int lua_sprite_set_scale(lua_State* L) {
 static int lua_sprite_get_width(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_get_width()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_get_width()");
 	}
 	neat_sprite* sprite = check_and_get_sprite(L, 1);
 	lua_pushinteger(L, sprite->source_rect.w);
@@ -526,8 +506,7 @@ static int lua_sprite_get_width(lua_State* L) {
 static int lua_sprite_get_height(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_get_height()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_get_height()");
 	}
 	neat_sprite* sprite = check_and_get_sprite(L, 1);
 	lua_pushinteger(L, sprite->source_rect.h);
@@ -537,8 +516,7 @@ static int lua_sprite_get_height(lua_State* L) {
 static int lua_sprite_get_dimensions(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_get_dimensions()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_sprite_get_dimensions()");
 	}
 	neat_sprite* sprite = check_and_get_sprite(L, 1);
 	lua_pushinteger(L, sprite->source_rect.w);
@@ -554,13 +532,11 @@ static int lua_texture_create(lua_State* L) {
 	if (n == 2) {
 		window = check_and_get_window(L, 1);
 	}else {
-		lua_pushstring(L, "Incorrect number of arguments to lua_texture_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_texture_create()");
 	}
 
 	if (!lua_isstring(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_texture_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_texture_create()");
 	}
 
 	neat_texture* new_texture = neat_texture_create(
@@ -586,16 +562,11 @@ static int lua_texture_create_from_text(lua_State* L) {
 	if (n == 4) {
 		window = check_and_get_window(L, 1);
 	}else {
-		lua_pushstring(L, "Incorrect number of arguments to lua_texture_create_from_text()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_texture_create_from_text()");
 	}
 
 	if (!lua_isstring(L, 2)) {
-		lua_pushstring(
-			L,
-			"Incorrect argument to lua_texture_create_from_text()"
-		);
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_texture_create_from_text()");
 	}
 
 	TTF_Font* font = check_and_get_font(L, 3);
@@ -624,8 +595,7 @@ static int lua_texture_create_from_text(lua_State* L) {
 static int lua_texture_destroy(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_texture_destroy()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_texture_destroy()");
 	}
 
 	neat_texture_destroy(check_and_get_texture(L, 1));
@@ -637,18 +607,15 @@ static int lua_texture_destroy(lua_State* L) {
 static int lua_font_create(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 2) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_font_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_font_create()");
 	}
 
 	if (!lua_isstring(L, 1)) {
-		lua_pushstring(L, "Incorrect argument to lua_font_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_font_create()");
 	}
 
 	if (!lua_isinteger(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_font_create()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_font_create()");
 	}
 
 	TTF_Font** font = (TTF_Font**)lua_newuserdata(L, sizeof(TTF_Font**));
@@ -680,8 +647,7 @@ static int lua_font_create(lua_State* L) {
 static int lua_font_destroy(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_font_destroy()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_font_destroy()");
 	}
 
 	TTF_Font* font = check_and_get_font(L, 1);
@@ -701,32 +667,27 @@ static int lua_rect_fill(lua_State* L) {
 		window = check_and_get_window(L, 1);
 	}
 	else {
-		lua_pushstring(L, "Incorrect number of arguments to lua_rect_fill()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_rect_fill()");
 	}
 		
 	SDL_Color* color = check_and_get_color(L, 6);
 
 	SDL_Rect rect;
 	if (!lua_isinteger(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_rect_fill()");
 	}
 	else rect.x = (int)lua_tointeger(L, 2);
 
 	if (!lua_isinteger(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_rect_fill()");
 	}
 	else rect.y = (int)lua_tointeger(L, 3);
 	if (!lua_isinteger(L, 4)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_rect_fill()");
 	}
 	else rect.w = (int)lua_tointeger(L, 4);
 	if (!lua_isinteger(L, 5)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_rect_fill()");
 	}
 	else rect.h = (int)lua_tointeger(L, 5);
 
@@ -743,8 +704,7 @@ static int lua_render_clear(lua_State* L) {
 	if (n == 1) {
 		window = check_and_get_window(L, 1);
 	}else {
-		lua_pushstring(L, "Incorrect number of arguments to lua_render_clear()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_render_clear()");
 	}
 		
 	SDL_RenderClear(window->renderer);
@@ -757,8 +717,7 @@ static int lua_render_show(lua_State* L) {
 	if (n == 1) {
 		window = check_and_get_window(L, 1);
 	}else {
-		lua_pushstring(L, "Incorrect number of arguments to lua_render_show()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_render_show()");
 	}
 
 	if(window->hidden == false)
@@ -772,25 +731,20 @@ static int lua_render_show(lua_State* L) {
 static int lua_new_color(lua_State* L) {
 	int n = lua_gettop(L);
 	if (n != 4) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_new_color()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_new_color()");
 	}
 
 	if (!lua_isinteger(L, 1)) {
-		lua_pushstring(L, "Incorrect argument to lua_new_color()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_new_color()");
 	}
 	if (!lua_isinteger(L, 2)) {
-		lua_pushstring(L, "Incorrect argument to lua_new_color()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_new_color()");
 	}
 	if (!lua_isinteger(L, 3)) {
-		lua_pushstring(L, "Incorrect argument to lua_new_color()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_new_color()");
 	}
 	if (!lua_isinteger(L, 4)) {
-		lua_pushstring(L, "Incorrect argument to lua_new_color()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_new_color()");
 	}
 	SDL_Color* new_color = (SDL_Color*)lua_newuserdata(L, sizeof(SDL_Color));
 	new_color->r = (int)lua_tointeger(L, 1);
@@ -909,13 +863,11 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 static int lua_is_key_pressed(lua_State* L) {// returns 0 to quit
 	int n = lua_gettop(L);
 	if (n != 1) {
-		lua_pushstring(L, "Incorrect number of arguments to lua_is_key_pressed()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect number of arguments to lua_is_key_pressed()");
 	}
 
 	if (!lua_isinteger(L, 1)) {
-		lua_pushstring(L, "Incorrect argument to lua_is_key_pressed()");
-		lua_error(L);
+		LUA_ERROR(L, "Incorrect argument to lua_is_key_pressed()");
 	}
 
 	SDL_Scancode scan_code = (SDL_Scancode)lua_tointeger(L, 1);

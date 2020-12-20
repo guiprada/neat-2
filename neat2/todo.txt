@@ -1,12 +1,4 @@
 todo
-- get lua error line numbers
-	local line = debug.getinfo(1).currentline
-
-	lua_Debug ar;
-	lua_getstack(L, 1, &ar);
-	lua_getinfo(L, "nSl", &ar);
-	int line = ar.currentline
-
 - create a render function for textures similar to love2d
 - check renderer flip lua functions
 - export initialization constants to  lua
@@ -56,6 +48,13 @@ done
 - create  internal anchor point and vec2
 - neat lua should call registered callbacks itself
 - new_texture should be a window method
+- get lua error line numbers
+	local line = debug.getinfo(1).currentline
+
+	lua_Debug ar;
+	lua_getstack(L, 1, &ar);
+	lua_getinfo(L, "nSl", &ar);
+	int line = ar.currentline
 
 ------------------------------------------------------------ roadmaps
 
