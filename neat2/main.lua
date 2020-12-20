@@ -60,7 +60,7 @@ while is_running do
 	
 	if window1.window then
         window1.window:clear()
-        window1.gamestate.render()
+        window1.gamestate.render(window1.window)
         window1.window:present()
     else
 		is_running = false

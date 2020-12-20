@@ -1,5 +1,12 @@
 todo
-- autorender stacks for sprites	sprites should render automatically
+- get lua error line numbers
+	local line = debug.getinfo(1).currentline
+
+	lua_Debug ar;
+	lua_getstack(L, 1, &ar);
+	lua_getinfo(L, "nSl", &ar);
+	int line = ar.currentline
+
 - create a render function for textures similar to love2d
 - check renderer flip lua functions
 - export initialization constants to  lua
@@ -9,8 +16,8 @@ todo
 - struct neat_font with atlas
 - sprite create should also be a window method
 - window get_id
-- new_texture should be a window method
 - window should have a render stack
+- autorender stacks for sprites	sprites should render automatically
 - sprite should have a hidden property
 - define color c- side
 - :) and we should have an animate function
@@ -48,6 +55,7 @@ done
 - fix color.lua
 - create  internal anchor point and vec2
 - neat lua should call registered callbacks itself
+- new_texture should be a window method
 
 ------------------------------------------------------------ roadmaps
 

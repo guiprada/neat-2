@@ -11,10 +11,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-neat_window * DEFAULT_WINDOW = NULL;
-
-////////////////////////////////////////////////////////////////////////////////
-
 static neat_window* check_and_get_window(lua_State* L, int stack_pos);
 static neat_sprite* check_and_get_sprite(lua_State* L, int stack_pos);
 static neat_texture* check_and_get_texture(lua_State* L, int stack_pos);
@@ -66,13 +62,9 @@ static int lua_define_scancodes(lua_State* L);
 ////////////////////////////////////////////////////////////////////////////////
 
 static const struct luaL_Reg neat_lib_functions[] = {
-	{"new_window", lua_window_create},
-	{"new_sprite", lua_sprite_create},
-	{"new_texture", lua_texture_create},
-	{"new_text_texture", lua_texture_create_from_text},
+	{"new_window", lua_window_create},	
 	{"new_color", lua_new_color},
 	{"new_font", lua_font_create},
-	{"rect_fill", lua_rect_fill},
 	{"dispatch_events", lua_handle_events},
 	{"is_key_pressed", lua_is_key_pressed},
 	{"define_scancodes", lua_define_scancodes},
@@ -86,6 +78,10 @@ static const struct luaL_Reg neat_window_methods[] = {
 	{"show", lua_window_show},
 	{"is_hidden", lua_window_is_hidden},
 	{"is_shown", lua_window_is_shown},
+	{"new_texture", lua_texture_create},
+	{"new_text_texture", lua_texture_create_from_text},
+	{"new_sprite", lua_sprite_create},
+	{"rect_fill", lua_rect_fill},
 	{"__gc", lua_window_destroy},
 	{NULL, NULL}
 };
@@ -212,10 +208,7 @@ static int lua_window_create(lua_State* L) {
 		(int)lua_tointeger(L, 3),
 		(int)lua_tointeger(L, 4),
 		(int)lua_tointeger(L, 5));
-	
-	if (DEFAULT_WINDOW == NULL) {
-		DEFAULT_WINDOW = *window;
-	}
+
 	luaL_getmetatable(L, "neat.window");
 	lua_setmetatable(L, -2);
 
@@ -232,10 +225,6 @@ static int lua_window_destroy(lua_State* L) {
 	}
 	
 	neat_window* window = check_and_get_window(L, 1);
-	if (window == DEFAULT_WINDOW) {
-		printf("Default Window was destroied!\n");
-		DEFAULT_WINDOW = NULL;
-	}
 	
 	neat_window_destroy(window);
 
@@ -298,12 +287,18 @@ static int lua_window_is_shown(lua_State* L) {
 
 static int lua_sprite_create(lua_State* L) {
 	int n = lua_gettop(L);
-	if (n != 1) {
+	if (n != 2) {
 		lua_pushstring(L, "Incorrect number of arguments to lua_sprite_create()");
 		lua_error(L);
 	}
 
-	neat_texture* t = check_and_get_texture(L, 1);
+	neat_window* w = check_and_get_window(L, 1);
+	neat_texture* t = check_and_get_texture(L, 2);
+
+	if (t->window != w) {
+		lua_pushstring(L, "lua_sprite_create() Error, texture does not belong to window");
+		lua_error(L);
+	}
 
 	neat_sprite** sprite = (neat_sprite**)lua_newuserdata(
 		L,
@@ -557,28 +552,20 @@ static int lua_texture_create(lua_State* L) {
 	int n = lua_gettop(L);
 	neat_window* window = NULL;
 	if (n == 2) {
-		window = check_and_get_window(L, 2);
-	}
-	else if (n == 1) {
-		if (DEFAULT_WINDOW != NULL)
-			window = DEFAULT_WINDOW;
-		else {
-			lua_pushstring(L, "Default Window does not exists!");
-			lua_error(L);
-		}
+		window = check_and_get_window(L, 1);
 	}else {
 		lua_pushstring(L, "Incorrect number of arguments to lua_texture_create()");
 		lua_error(L);
 	}
 
-	if (!lua_isstring(L, 1)) {
+	if (!lua_isstring(L, 2)) {
 		lua_pushstring(L, "Incorrect argument to lua_texture_create()");
 		lua_error(L);
 	}
 
 	neat_texture* new_texture = neat_texture_create(
 		window,
-		lua_tostring(L, 1)
+		lua_tostring(L, 2)
 	);
 	neat_texture** tex = ((neat_texture**)lua_newuserdata(
 		L,
@@ -597,22 +584,13 @@ static int lua_texture_create_from_text(lua_State* L) {
 	int n = lua_gettop(L);
 	neat_window* window = NULL;
 	if (n == 4) {
-		window = check_and_get_window(L, 4);
-	}
-	else if (n == 3) {
-		if (DEFAULT_WINDOW != NULL)
-			window = DEFAULT_WINDOW;
-		else {
-			lua_pushstring(L, "Default Window does not exists!");
-			lua_error(L);
-		}
-	}
-	else {
+		window = check_and_get_window(L, 1);
+	}else {
 		lua_pushstring(L, "Incorrect number of arguments to lua_texture_create_from_text()");
 		lua_error(L);
 	}
 
-	if (!lua_isstring(L, 1)) {
+	if (!lua_isstring(L, 2)) {
 		lua_pushstring(
 			L,
 			"Incorrect argument to lua_texture_create_from_text()"
@@ -620,15 +598,15 @@ static int lua_texture_create_from_text(lua_State* L) {
 		lua_error(L);
 	}
 
-	TTF_Font* font = check_and_get_font(L, 2);
+	TTF_Font* font = check_and_get_font(L, 3);
 
-	SDL_Color  color = *check_and_get_color(L, 3);
+	SDL_Color  color = *check_and_get_color(L, 4);
 	
 	neat_texture* new_texture = neat_texture_create_from_text(
 		window,
 		font,
 		color,
-		lua_tostring(L, 1)
+		lua_tostring(L, 2)
 	);
 	neat_texture** tex = ((neat_texture**)lua_newuserdata(
 		L,
@@ -720,45 +698,37 @@ static int lua_rect_fill(lua_State* L) {
 	int n = lua_gettop(L);
 	neat_window* window = NULL;
 	if (n == 6) {
-		window = check_and_get_window(L, 6);
-	}
-	else if (n == 5) {
-		if (DEFAULT_WINDOW != NULL)
-			window = DEFAULT_WINDOW;
-		else {
-			lua_pushstring(L, "Default Window does not exists!");
-			lua_error(L);
-		}
+		window = check_and_get_window(L, 1);
 	}
 	else {
 		lua_pushstring(L, "Incorrect number of arguments to lua_rect_fill()");
 		lua_error(L);
 	}
 		
-	SDL_Color* color = check_and_get_color(L, 5);
+	SDL_Color* color = check_and_get_color(L, 6);
 
 	SDL_Rect rect;
-	if (!lua_isinteger(L, 1)) {
-		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
-		lua_error(L);
-	}
-	else rect.x = (int)lua_tointeger(L, 1);
-
 	if (!lua_isinteger(L, 2)) {
 		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
 		lua_error(L);
 	}
-	else rect.y = (int)lua_tointeger(L, 2);
+	else rect.x = (int)lua_tointeger(L, 2);
+
 	if (!lua_isinteger(L, 3)) {
 		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
 		lua_error(L);
 	}
-	else rect.w = (int)lua_tointeger(L, 3);
+	else rect.y = (int)lua_tointeger(L, 3);
 	if (!lua_isinteger(L, 4)) {
 		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
 		lua_error(L);
 	}
-	else rect.h = (int)lua_tointeger(L, 4);
+	else rect.w = (int)lua_tointeger(L, 4);
+	if (!lua_isinteger(L, 5)) {
+		lua_pushstring(L, "Incorrect argument to lua_rect_fill()");
+		lua_error(L);
+	}
+	else rect.h = (int)lua_tointeger(L, 5);
 
 	neat_rect_fill(window, color, &rect);
 
@@ -772,13 +742,6 @@ static int lua_render_clear(lua_State* L) {
 	neat_window* window = NULL;
 	if (n == 1) {
 		window = check_and_get_window(L, 1);
-	}else if (n == 0) {
-		if (DEFAULT_WINDOW != NULL)
-			window = DEFAULT_WINDOW;
-		else {
-			lua_pushstring(L, "Default Window does not exists!");
-			lua_error(L);
-		}
 	}else {
 		lua_pushstring(L, "Incorrect number of arguments to lua_render_clear()");
 		lua_error(L);
@@ -793,13 +756,6 @@ static int lua_render_show(lua_State* L) {
 	neat_window* window = NULL;
 	if (n == 1) {
 		window = check_and_get_window(L, 1);
-	}else if (n == 0) {
-		if (DEFAULT_WINDOW != NULL)
-			window = DEFAULT_WINDOW;
-		else {
-			lua_pushstring(L, "Default Window does not exists!");
-			lua_error(L);
-		}
 	}else {
 		lua_pushstring(L, "Incorrect number of arguments to lua_render_show()");
 		lua_error(L);
