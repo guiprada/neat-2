@@ -1,9 +1,10 @@
 -- guiprada@gmail.com  Guilherme Cunha Prada 2017-2020 : )
 -- zlib license
 neat.color = require "color"
+neat.events = require "events"
+neat.scancodes = neat.define_scancodes()
 neat.utils = require "utils"
 neat.utils.run_tests()
-neat.scancodes = neat.define_scancodes()
 
 -- windows size
 local screen_width, screen_height = 500, 500
@@ -52,7 +53,7 @@ function on_keydown (arg1, arg2, arg3)
 end
 
 function unhandled(event)
-	print("unhandled event:", event)
+	print("unhandled event:", neat.events[event], event)
 end
 
 while is_running do

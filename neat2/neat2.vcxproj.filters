@@ -40,6 +40,9 @@
     <None Include="color.lua">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="events.lua">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt">

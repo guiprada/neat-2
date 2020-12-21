@@ -20,7 +20,7 @@ function game.load(window, width, height)
 	game.circle:move_to(math.floor(width/2)-16, math.floor(height/4 -16))
 
 	local rectangle_texture = window:new_texture("assets/rectangle2.png")
-	game.rectangle = window:new_sprite(window)
+	game.rectangle = window:new_sprite(rectangle_texture)
 	game.rectangle:set_source(0, 32, 128, 64)
 	game.rectangle:move_to(125, 250)
 	game.rectangle:set_anchor(0,game.rectangle:get_height())

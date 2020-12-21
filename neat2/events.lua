@@ -1,0 +1,76 @@
+local events = {}
+
+local events_reverse = 
+{
+    SDL_FIRSTEVENT      = 0,
+
+    SDL_QUIT            = 0x100,    
+    SDL_APP_TERMINATING = 0x100 + 1,
+    SDL_APP_LOWMEMORY   = 0x100 + 2,
+    SDL_APP_WILLENTERBACKGROUND = 0x100 + 3,
+    SDL_APP_DIDENTERBACKGROUND  = 0x100 + 4,
+    SDL_APP_WILLENTERFOREGROUND = 0x100 + 5,
+    SDL_APP_DIDENTERFOREGROUND  = 0x100 + 6,
+
+    SDL_DISPLAYEVENT   = 0x150,
+
+    SDL_WINDOWEVENT    = 0x200,
+    SDL_SYSWMEVENT     = 0x200 + 1,
+
+    SDL_KEYDOWN        = 0x300,
+    SDL_KEYUP          = 0x300 + 1,
+    SDL_TEXTEDITING    = 0x300 + 2,            
+    SDL_TEXTINPUT      = 0x300 + 3,              
+    SDL_KEYMAPCHANGED  = 0x300 + 4,
+
+    SDL_MOUSEMOTION     = 0x400, 
+    SDL_MOUSEBUTTONDOWN = 0x400 + 1,        
+    SDL_MOUSEBUTTONUP   = 0x400 + 2,          
+    SDL_MOUSEWHEEL      = 0x400 + 3,
+
+    SDL_JOYAXISMOTION    = 0x600, 
+    SDL_JOYBALLMOTION    = 0x600 + 1,          
+    SDL_JOYHATMOTION     = 0x600 + 2,           
+    SDL_JOYBUTTONDOWN    = 0x600 + 3,          
+    SDL_JOYBUTTONUP      = 0x600 + 4,             
+    SDL_JOYDEVICEADDED   = 0x600 + 5,         
+    SDL_JOYDEVICEREMOVED = 0x600 + 6,
+
+    SDL_CONTROLLERAXISMOTION  = 0x650,
+    SDL_CONTROLLERBUTTONDOWN  = 0x650 + 1,
+    SDL_CONTROLLERBUTTONUP    = 0x650 + 2,
+    SDL_CONTROLLERDEVICEADDED    = 0x650 + 3,        
+    SDL_CONTROLLERDEVICEREMOVED  = 0x650 + 4,      
+    SDL_CONTROLLERDEVICEREMAPPED = 0x650 + 5,
+
+    SDL_FINGERDOWN      = 0x700,
+    SDL_FINGERUP        = 0x700 + 1,
+    SDL_FINGERMOTION    = 0x700 + 2,
+
+    SDL_DOLLARGESTURE   = 0x800,
+    SDL_DOLLARRECORD    = 0x800 + 1,
+    SDL_MULTIGESTURE    = 0x800 + 2,
+
+    SDL_CLIPBOARDUPDATE = 0x900,
+
+    SDL_DROPFILE        = 0x1000,
+    SDL_DROPTEXT        = 0x1000 + 1,
+    SDL_DROPBEGIN       = 0x1000 + 2, 
+    SDL_DROPCOMPLETE    = 0x1000 + 3,
+
+    SDL_AUDIODEVICEADDED   = 0x1100,
+    SDL_AUDIODEVICEREMOVED = 0x1100 + 1,
+
+    SDL_SENSORUPDATE = 0x1200,
+
+    SDL_RENDER_TARGETS_RESET = 0x2000,
+    SDL_RENDER_DEVICE_RESET  = 0x2000 + 1,
+
+    SDL_USEREVENT    = 0x8000,
+    SDL_LASTEVENT    = 0xFFFF
+}
+for key, value in pairs(events_reverse) do
+	events[value] = key
+end
+
+return events

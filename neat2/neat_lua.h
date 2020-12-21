@@ -777,6 +777,7 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 					lua_pop(L, 1);
 				}
 			}
+			break;
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_CLOSE:
@@ -791,6 +792,7 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 						lua_pop(L, 1);
 					}
 				}
+				break;
 			case SDL_WINDOWEVENT_FOCUS_GAINED:
 				{
 					int i;
@@ -802,7 +804,8 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 					else {
 						lua_pop(L, 1);
 					}
-				}				
+				}
+				break;
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 				{
 					int i;
@@ -815,7 +818,9 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 						lua_pop(L, 1);
 					}
 				}
+				break;
 			};
+			break;
 		case SDL_KEYDOWN:
 			{
 				int i;
@@ -829,6 +834,7 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 					lua_pop(L, 1);
 				}
 			}
+			break;
 		case SDL_KEYUP:
 			{
 				int i;
@@ -842,6 +848,7 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 					lua_pop(L, 1);
 				}
 			}
+			break;
 		default:
 			{
 				//printf("Unhandled Event: %i \n", event.type);
@@ -855,6 +862,7 @@ static int lua_handle_events(lua_State* L) {// returns 0 to quit
 					lua_pop(L, 1);
 				}
 			}
+			break;
 		}
 	}	
 	return 0;
