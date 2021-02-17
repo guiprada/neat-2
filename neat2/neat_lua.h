@@ -17,7 +17,7 @@ void LUA_ERROR(lua_State* L, char* message) {
 	lua_getinfo(L, "nSl", &debug);
 	int line = debug.currentline;
 	char* source = debug.short_src;
-	char* function = debug.name;
+	const char* function = debug.name;
 
 	printf("ERROR on file: %s -- function: %s -- line: %d\n", source, function, line);
 	
@@ -32,8 +32,6 @@ static neat_sprite* check_and_get_sprite(lua_State* L, int stack_pos);
 static neat_texture* check_and_get_texture(lua_State* L, int stack_pos);
 static SDL_Color* check_and_get_color(lua_State* L, int stack_pos);
 static TTF_Font* check_and_get_font(lua_State* L, int stack_pos);
-
-static int lua_neat_start(lua_State* L);
 
 static int lua_window_create(lua_State* L);
 static int lua_window_destroy(lua_State* L);
@@ -51,7 +49,6 @@ static int lua_sprite_set_rotation(lua_State* L);
 static int lua_sprite_add_rotation(lua_State* L);
 static int lua_sprite_set_anchor(lua_State* L);
 static int lua_sprite_set_source_rect(lua_State* L);
-static int lua_sprite_set_source_rect_and_anchor(lua_State* L);
 static int lua_sprite_set_scale(lua_State* L);
 static int lua_sprite_get_width(lua_State* L);
 static int lua_sprite_get_height(lua_State* L);
@@ -691,7 +688,7 @@ static int lua_rect_fill(lua_State* L) {
 	}
 	else rect.h = (int)lua_tointeger(L, 5);
 
-	neat_rect_fill(window, color, &rect);
+	neat_SDL_Rect_fill(window, color, &rect);
 
 	return 0;
 }

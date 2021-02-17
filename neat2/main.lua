@@ -23,7 +23,7 @@ function on_mouse_motion (arg1, arg2, arg3)
 	if arg1 == window1.id then
 		window1.gamestate.on_mouse_motion(arg2, arg3)                
     end
-	print("x: ", arg2)
+	--print("x: ", arg2)
 end
 function on_window_close (arg1, arg2, arg3)
 	if arg1 == window1.id then
